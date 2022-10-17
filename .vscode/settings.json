@@ -1,0 +1,25 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.formatting.autopep8Path": "${workspaceFolder}/.venv/Scripts/autopep8",
+    "python.formatting.blackPath": "${workspaceFolder}/.venv/Scripts/black",
+    "python.formatting.yapfPath": "${workspaceFolder}/.venv/Scripts/yapf",
+    "python.linting.banditPath": "${workspaceFolder}/.venv/Scripts/bandit",
+    "python.linting.flake8Path": "${workspaceFolder}/.venv/Scripts/flake8",
+    "python.linting.mypyPath": "${workspaceFolder}/.venv/Scripts/mypy",
+    "python.linting.pycodestylePath": "${workspaceFolder}/.venv/Scripts/pycodestyle",
+    "python.linting.pydocstylePath": "${workspaceFolder}/.venv/Scripts/pydocstyle",
+    "python.linting.pylintPath": "${workspaceFolder}/.venv/Scripts/pylint",
+    "python.linting.flake8Args": [
+        "--line-length=120",
+        "--config",
+        "./.flake8"
+    ],
+    "python.formatting.blackArgs": [
+        "--line-length=120"
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.envFile": "${workspaceFolder}/.env"
+}
