@@ -13,6 +13,7 @@ packages = [{include = "komposition_eines_musikstuecks_mittels_neuronaler_netze"
 [tool.poetry.dependencies]
 python = "^3.9"
 tensorflow = "<2.11"
+matplotlib = "^3.6.3"
 
 
 [tool.poetry.group.dev.dependencies]
