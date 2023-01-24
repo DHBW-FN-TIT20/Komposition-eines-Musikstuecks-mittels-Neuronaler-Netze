@@ -41,7 +41,7 @@ plt.show()
 # Create a neural network with 2 inputs, 2 hidden layers with 10 neurons each,
 # and 2 outputs
 model = keras.Sequential([
-    keras.layers.Dense(10, activation="relu", input_shape=(2,)),
+    keras.layers.Flatten(input_shape=(2,)),
     keras.layers.Dense(10, activation="relu"),
     keras.layers.Dense(2, activation="softmax")
 ])
