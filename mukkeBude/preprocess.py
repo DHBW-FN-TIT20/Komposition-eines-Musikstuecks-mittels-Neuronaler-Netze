@@ -4,7 +4,7 @@ import music21 as m21
 import keras
 import numpy as np
 
-KERN_DATASET_PATH = "mukkeBude\\deutschl\\test"
+KERN_DATASET_PATH = "mukkeBude\\deutschl\\erk"
 SAVE_DIR = "mukkeBude\\dataset"
 SINGLE_FILE_DATASET = "mukkeBude\\file_dataset"
 MAPPING_PATH = "mukkeBude\\mapping.json"
@@ -190,12 +190,10 @@ def generate_training_sequences(sequence_length, file_dataset_path, mapping_path
 
     return inputs, targets
 
-
 def main():
     preprocess(KERN_DATASET_PATH)
     songs = create_single_file_dataset(SAVE_DIR, SINGLE_FILE_DATASET, SEQUENCE_LENGTH)
     mappings = create_mapping(songs, MAPPING_PATH)
-    inputs, targets = generate_training_sequences(SEQUENCE_LENGTH, SINGLE_FILE_DATASET, MAPPING_PATH)
 
 
 if __name__ == "__main__":
