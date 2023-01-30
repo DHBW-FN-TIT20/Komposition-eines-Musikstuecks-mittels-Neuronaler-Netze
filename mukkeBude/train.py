@@ -1,13 +1,13 @@
 import keras as keras
 from preprocess import generate_training_sequences, SEQUENCE_LENGTH, MAPPING_PATH, SINGLE_FILE_DATASET
 
-OUTPUT_UNITS = 38
+OUTPUT_UNITS = 60
 NUM_UNITS = [256]
-EPOCHS = 50
-BATCH_SIZE = 64 # amaount of samples before running backpropagation
+EPOCHS = 60
+BATCH_SIZE = 64 # amount of samples before running backpropagation
 LOSS = "sparse_categorical_crossentropy"
 LEARNING_RATE = 0.001
-SAVE_MODEL_PATH = "model_erk.h5"
+SAVE_MODEL_PATH = "model_bach.h5"
 
 
 def build_model(output_units, num_units, loss, learning_rate):
