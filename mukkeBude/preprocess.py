@@ -45,6 +45,7 @@ def encode_song(song : m21.stream.Score, time_step=0.25):
         # handle notes
         if isinstance(event, m21.note.Note):
             symbol = event.pitch.midi # e.g. = 60
+            print(event.isChord)
         elif isinstance(event, m21.note.Rest):
             symbol = "r"
 

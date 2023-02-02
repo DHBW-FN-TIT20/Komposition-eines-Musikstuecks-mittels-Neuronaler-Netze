@@ -74,13 +74,16 @@ class MelodyGenerator:
     def save_melody(self, melody, step_duration=0.25, format="midi", file_name="mel.midi"):
         # create a music21 stream
         stream = m21.stream.Stream()
-        stream_measure = m21.stream.Measure()
-        stream_measure.timeSignature = m21.meter.TimeSignature('3/4')
-        stream.append(stream_measure)
 
         # create melody part
         melodyPart = m21.stream.Part()
         melodyPart.insert(m21.instrument.Piano())
+
+        secondPart = m21.stream.Part()
+        secondPart.insert(m21.instrument.Piano())
+
+        thirdPart = m21.stream.Part()
+        thirdPart.insert(m21.instrument.Piano())
 
         # create optional base drum part
         bassPart = m21.stream.Part()
@@ -112,11 +115,17 @@ class MelodyGenerator:
                     # handle rest
                     if start_symbol == "r":
                         m21_event = m21.note.Rest(quarterLength=quarter_length_duration)
+                        m21_event2 = m21.note.Rest(quarterLength=quarter_length_duration)
+                        m21_event3 = m21.note.Rest(quarterLength=quarter_length_duration)
                     # handle note
                     else:
                         m21_event = m21.note.Note(int(start_symbol), quarterLength=quarter_length_duration)
+                        m21_event2 = m21.note.Note(int(start_symbol)+4, quarterLength=quarter_length_duration)
+                        m21_event3 = m21.note.Note(int(start_symbol)+7, quarterLength=quarter_length_duration)
 
                     melodyPart.append(m21_event)
+                    secondPart.append(m21_event2)
+                    thirdPart.append(m21_event3)
                     step_counter = 1
 
                 start_symbol = symbol
@@ -126,22 +135,25 @@ class MelodyGenerator:
                 step_counter += 1
 
         # write the m21 stream to midi file
-        melodyPart.transpose('-a3')
         stream.append(melodyPart)
+        # stream.insert(0,secondPart)
+        # stream.insert(0, thirdPart)
 
-        bass = m21.note.Note(35, quarterLength=4)
-        snare = m21.note.Note(38, quarterLength=1)
-        n = int(melodyPart.duration.quarterLength / bass.duration.quarterLength)
-        bassPart.repeatAppend(bass, n)
-        snarePart.repeatAppend(snare, int(melodyPart.duration.quarterLength))
+
+        # bass = m21.note.Note(35, quarterLength=4)
+        # snare = m21.note.Note(38, quarterLength=1)
+        # n = int(melodyPart.duration.quarterLength / bass.duration.quarterLength)
+        # bassPart.repeatAppend(bass, n)
+        # snarePart.repeatAppend(snare, int(melodyPart.duration.quarterLength))
         # stream.append(bassPart)
         # stream.append(snarePart)
+        
         stream.write(format, file_name)
 
 if __name__ == "__main__":
     mg = MelodyGenerator(model_path="model_bach.h5")
     seed = "69 _ 65 _ 67 _ 55 _ r 60 55 52 48 _ _ _"
-    seed2 = "60 _ 59 _ 54 _ _ _ 50 _ 55 _ r _ _ "
-    melody = mg.generate_melody(seed, 1000, SEQUENCE_LENGTH, 1.9)
+    seed2 = "60 _ 62 _ 52 _ 50 _ 52 _ 48 _ 53 _ 52 _ 53 _ 50 _ 56 _ 52 _ 57 _ 50 _ 52 _ 50 _ 52 _ 40 _ 45 _ _ _ 43 _ _ _ 41 _ _ _ _ _ _ _ 40 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
+    melody = mg.generate_melody(seed2, 1000, SEQUENCE_LENGTH, 2.1)
     print(melody)
     mg.save_melody(melody, file_name="reborn_bach.mid")
