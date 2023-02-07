@@ -3,13 +3,13 @@ import json
 import music21 as m21
 import keras
 import numpy as np
+from pathlib import Path
 
-KERN_DATASET_PATH = "mukkeBude\\HumdrumKern\\Bach"
-MIDI_DATASET_PATH = "mukkeBude\\MIDI\\Bach"
-SAVE_DIR = "mukkeBude\\dataset"
-SINGLE_FILE_DATASET = "mukkeBude\\file_dataset_bach_corpus_part2"
-MAPPING_PATH = "mukkeBude\\mapping_bach_corpus_part2.json"
-SEQUENCE_LENGTH = 16 # ca. 4 Takte im 4/4 Takt
+KERN_DATASET_PATH = Path("mukkeBude/bach_preludes")
+SAVE_DIR = Path("mukkeBude/dataset")
+SINGLE_FILE_DATASET = Path("mukkeBude/file_dataset_bach_preludes")
+MAPPING_PATH = Path("mukkeBude/mapping_bach_preludes.json")
+SEQUENCE_LENGTH = 64 # ca. 4 Takte im 4/4 Takt
 ACCEPTABLE_DURATIONS = [
     0.25, #sixteenth note
     0.5, #eight note
