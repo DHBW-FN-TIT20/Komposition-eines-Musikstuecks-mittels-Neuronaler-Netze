@@ -4,19 +4,28 @@ import music21 as m21
 import keras
 import numpy as np
 
-KERN_DATASET_PATH = "mukkeBude\\bach_preludes"
+KERN_DATASET_PATH = "mukkeBude\\HumdrumKern\\Bach"
+MIDI_DATASET_PATH = "mukkeBude\\MIDI\\Bach"
 SAVE_DIR = "mukkeBude\\dataset"
-SINGLE_FILE_DATASET = "mukkeBude\\file_dataset_bach_preludes"
-MAPPING_PATH = "mukkeBude\\mapping_bach_preludes.json"
-SEQUENCE_LENGTH = 64 # ca. 4 Takte im 4/4 Takt
+SINGLE_FILE_DATASET = "mukkeBude\\file_dataset_bach_corpus_part2"
+MAPPING_PATH = "mukkeBude\\mapping_bach_corpus_part2.json"
+SEQUENCE_LENGTH = 16 # ca. 4 Takte im 4/4 Takt
 ACCEPTABLE_DURATIONS = [
     0.25, #sixteenth note
     0.5, #eight note
     0.75, #dotted eight note
     1, #quarter note
+    1.25, 
     1.5, #dotted quarter note
+    1.75,
     2, #half note
+    2.25,
+    2.5,
+    2.75,
     3, # dotted half note
+    3.25,
+    3.5,
+    3.75,
     4 # full note
 ]
 # kern, MIDI, MusicXML, ABC -> m21 -> kern, MIDI, ...
@@ -25,6 +34,7 @@ def has_acceptable_durations(song, acceptable_durations):
     # filter notes and rests from song first
     for note in song.flat.notesAndRests:
         if note.duration.quarterLength not in acceptable_durations:
+            print(note.duration.quarterLength)
             return False
     return True
 
@@ -38,25 +48,38 @@ def load_songs_in_kern(dataset_path):
                 songs.append(song)
     return songs
 
-def encode_song(song : m21.stream.Score, time_step=0.25):
+def load_songs_in_midi(dataset_path):
+    songs = []
+    # go through all the files in dataset and load the with music21
+    for path, subdir, files in os.walk(dataset_path):
+        for file in files:
+            if file[-3:] ==  "mid":
+                song = m21.converter.parse(os.path.join(path, file))
+                songs.append(song)
+    return songs
+
+def encode_song(song : m21.stream.Score, time_step=0.125):
     # p = 60, d = 1.0 -> [60, "_", "_", "_"]
     encoded_song = []
-    for event in song.flat.notesAndRests:
-        # handle notes
-        if isinstance(event, m21.note.Note):
-            symbol = event.pitch.midi # e.g. = 60
-            print(event.isChord)
-        elif isinstance(event, m21.note.Rest):
-            symbol = "r"
-
-        #convert the note/rest into time series notation
-        steps = int(event.duration.quarterLength / time_step)
-        for step in range(steps):
-            if step == 0:
-                encoded_song.append(symbol)
+    parts = song.getElementsByClass(m21.stream.Part)
+    if len(parts) > 1:
+        for event in parts[1].flat.notesAndRests:
+            # handle notes
+            if isinstance(event, m21.note.Note):
+                symbol = event.pitch.midi # e.g. = 60
+            elif isinstance(event, m21.note.Rest):
+                symbol = "r"
             else:
-                encoded_song.append("_")
+                continue
 
+            #convert the note/rest into time series notation
+            steps = int(event.duration.quarterLength / time_step)
+            for step in range(steps):
+                if step == 0:
+                    encoded_song.append(symbol)
+                else:
+                    encoded_song.append("_")
+                    
     # cast encoded song to a str
     encoded_song = " ".join(map(str, encoded_song))
     return encoded_song
@@ -73,12 +96,14 @@ def transpose(song : m21.stream.Score):
     """
     # get key from the song
     parts = song.getElementsByClass(m21.stream.Part)
-    measures_part0 = parts[0].getElementsByClass(m21.stream.Measure)
-    key = measures_part0[0][4]
+    voices = song.getElementsByClass(m21.stream.Voice)
+    # measures_part0 = parts[0].getElementsByClass(m21.stream.Measure)
+    # key = measures_part0[0][4]
+
 
     # estimate key using music21
-    if not isinstance(key, m21.key.Key):
-        key = song.analyze("key")
+    # if not isinstance(key, m21.key.Key):
+    key = song.analyze("key")
 
     print(key)
 
@@ -95,13 +120,18 @@ def transpose(song : m21.stream.Score):
 def preprocess(dataset_path):
     # load the songs
     print("Loading songs...")
-    songs = load_songs_in_kern(dataset_path)
+    # songs = load_songs_in_midi(dataset_path)
+    paths = m21.corpus.getComposer('bach')
+    songs = []
+    for path in paths:
+        song = m21.corpus.parse(path)
+        songs.append(song)
     print(f"Loaded {len(songs)} songs.")
 
     for i, song in enumerate(songs):        
         # filter out songs that have non-acceptable durations
-        if not has_acceptable_durations(song, ACCEPTABLE_DURATIONS):
-            continue
+        # if not has_acceptable_durations(song, ACCEPTABLE_DURATIONS):
+        #     continue
 
         # transpose songs to Cmaj/Amin (C-Dur/A-Moll)
         song = transpose(song)
@@ -192,7 +222,7 @@ def generate_training_sequences(sequence_length, file_dataset_path, mapping_path
     return inputs, targets
 
 def main():
-    preprocess(KERN_DATASET_PATH)
+    preprocess(MIDI_DATASET_PATH)
     songs = create_single_file_dataset(SAVE_DIR, SINGLE_FILE_DATASET, SEQUENCE_LENGTH)
     mappings = create_mapping(songs, MAPPING_PATH)
 
