@@ -1,0 +1,14 @@
+name: tf-gpu
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - cudatoolkit=11.2
+  - cudnn=8.1.0
+  - python=3.9
+  - music21
+  - jupyterlab
+  - pip
+  - pip:
+    - tensorflow
+prefix: /home/deglasfl/miniconda3/envs/tf-gpu
