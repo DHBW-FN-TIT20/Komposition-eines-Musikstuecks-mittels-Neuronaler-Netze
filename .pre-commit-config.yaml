@@ -19,7 +19,7 @@ repos:
   hooks:
   - id: reorder-python-imports
     args:
-    - "--application-directories=.:O3R_VPU_O2X_ImageRecorder"
+    - "--application-directories=.:Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze"
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.1.0

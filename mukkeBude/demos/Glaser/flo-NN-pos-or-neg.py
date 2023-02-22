@@ -1,11 +1,10 @@
 # This script create a neural network to classify the position of a point
 # in a 2D plane. The point is either in the positive or negative half-plane.
 # The network is trained with the backpropagation algorithm.
-
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-import numpy as np
-import matplotlib.pyplot as plt
 
 # Create a dataset of 1000 points in the 2D plane
 # The points are either in the positive or negative half-plane
@@ -43,13 +42,15 @@ plt.show()
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(2,)),
     keras.layers.Dense(10, activation="relu"),
-    keras.layers.Dense(2, activation="softmax")
+    keras.layers.Dense(2, activation="softmax"),
 ])
 
 # Compile the neural network
-model.compile(optimizer='adam',
-                loss='categorical_crossentropy',
-                metrics=['accuracy'])
+model.compile(
+    optimizer='adam',
+    loss='categorical_crossentropy',
+    metrics=['accuracy'],
+)
 
 # Train the neural network
 model.fit(x_train, y_train, epochs=10)

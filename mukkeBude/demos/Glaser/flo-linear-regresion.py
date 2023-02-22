@@ -1,10 +1,9 @@
 # This script creates a TesnorFlow model for linear regression
 # The input data is a set of points (x,y) that ist generated with the function y = 2x + 1
 # The model ist trained to find the y value for a given x value
-
-import tensorflow as tf
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
 
 # Generate input data
 x_data_train = np.random.randint(0, 10_000, 1_000).astype(np.float32)
@@ -64,7 +63,7 @@ for i, prediction in enumerate(y_predicted):
     else:
         wrong += 1
         # print('Prediction: ', prediction, ' - Wrong')
-    
+
     diffrence += abs(prediction["predictions"][0] - y_data_test[i])
 
 print('Correct: ', correct)
