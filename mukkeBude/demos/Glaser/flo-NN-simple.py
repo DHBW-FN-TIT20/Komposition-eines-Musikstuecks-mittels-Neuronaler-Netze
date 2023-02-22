@@ -1,12 +1,10 @@
 # This script creates a TensorFlow model with a neural network for the function y = 2x + 1
 # The input data is a set of points (x,y) that ist generated with the function y = 2x + 1
 # The model ist trained to find the y value for a given x value
-
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-
 # Helper libraries
-import numpy as np
 
 math_function = lambda x: x * 2 + 1
 
@@ -24,7 +22,7 @@ model = keras.Sequential(
     [
         keras.layers.Dense(1, input_shape=(1,)),  # The input shape is 1 because the input data is a single value
         keras.layers.Dense(1),
-    ]
+    ],
 )
 
 # Compile the model
