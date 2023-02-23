@@ -27,6 +27,12 @@ def read_single(file_path:str) -> m21.stream.Score:
     """
     return m21.converter.parse(file_path)
 
+def write_midi(song:m21.stream.Score, output_path:str="test.mid") -> None:
+    song.write('midi', fp=output_path)
+    
+def write_musicxml(song:m21.stream.Score, output_path:str="test.mid") -> None:
+    song.write('musicxml', fp=output_path)
+
 def read_single_from_corpus(corpus_path:str) -> m21.stream.Score:
     """Convert file in music21 corpus to music21.stream.Score. Paths to corpus files can be retrieved using e.g. paths = music21.corpus.getComposer('bach')
 
@@ -55,11 +61,16 @@ def read_all(folder_path:str) -> list[m21.stream.Score]:
     return songs
 
 def to_polyphonic_encoding(song:m21.stream.Score, mapping):
-    onehotarr = song_to_onehotarr(song)
-    nparr =  onehotarr_to_nparr(onehotarr)
-    return nparr_to_indexencoding(nparr, mapping)
+    score_arr = song_to_scorearr(song)
+    encoded_arr =  scorearr_to_encodedarr(score_arr)
+    return encodedarr_to_indexencoding(encoded_arr, mapping)
 
-def song_to_onehotarr(song:m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SAMPLE_FREQ, max_note_dur=MAX_NOTE_DUR):
+def from_polyphonic_encoding(index_arr, mapping, bpm:int=120) -> m21.stream.Score:
+    encoded_arr = indexarr_to_encodedarr(index_arr, mapping)
+    score_arr = encodedarr_to_scorearr(np.array(encoded_arr))
+    return scorearr_to_song(score_arr, bpm=bpm)
+
+def song_to_scorearr(song:m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SAMPLE_FREQ, max_note_dur=MAX_NOTE_DUR):
     highest_time = max(song.flat.getElementsByClass('Note').highestTime, song.flat.getElementsByClass('Chord').highestTime)
     maxTimeStep = round(highest_time * sample_freq)+1
     score_arr = np.zeros((maxTimeStep, len(song.parts), NOTE_SIZE))
@@ -86,7 +97,7 @@ def song_to_onehotarr(song:m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SA
             score_arr[offset+1:offset+duration, idx, pitch] = VALTCONT      # Continue holding note
     return score_arr
 
-def onehotarr_to_nparr(chordarr, skip_last_rest=True):
+def scorearr_to_encodedarr(chordarr, skip_last_rest=True):
     """Generate numpy array with [note,duration]
 
     Args:
@@ -135,11 +146,11 @@ def encode_timestep(timestep, note_range=PIANO_RANGE, enc_type=None):
         # note_class, duration, octave, instrument
         return [[n%12, d, n//12, i] for n,d,i in notes]
 
-def nparr_to_indexencoding(t, mapping, seq_type=SEQType.Sentence, add_eos=False):
+def encodedarr_to_indexencoding(t, mapping, seq_type=SEQType.Sentence, add_eos=False):
     "Transforms numpy array from 2 column (note, duration) matrix to a single column"
     "[[n1, d1], [n2, d2], ...] -> [n1, d1, n2, d2]"
     if isinstance(t, (list, tuple)) and len(t) == 2:
-        return [nparr_to_indexencoding(x, mapping, seq_type) for x in t]
+        return [encodedarr_to_indexencoding(x, mapping, seq_type) for x in t]
     t = t.copy()
 
     t[:, 0] = t[:, 0] + mapping.note_range[0]
@@ -158,3 +169,105 @@ def seq_prefix(seq_type, vocab):
     # if seq_type == SEQType.Melody:
     #     start_token = vocab.stoi[MSEQ]
     return np.array([start_token, vocab.pad_idx])
+
+def encodedarr_to_scorearr(encoded_arr, note_size=NOTE_SIZE):
+    num_instruments = 1 if len(encoded_arr.shape) <= 2 else encoded_arr.max(axis=0)[-1]
+    
+    max_len = get_len_encodedarr(encoded_arr)
+    # score_arr = (steps, inst, note)
+    score_arr = np.zeros((max_len, num_instruments, note_size))
+    
+    idx = 0
+    for step in encoded_arr:
+        n,d,i = (step.tolist()+[0])[:3] # or n,d,i
+        if n < VALTSEP: continue # special token
+        if n == VALTSEP:
+            idx += d
+            continue
+        score_arr[idx,i,n] = d
+    return score_arr
+
+def get_len_encodedarr(encoded_arr):
+    duration = 0
+    for t in encoded_arr:
+        if t[0] == VALTSEP: 
+            duration += t[1]
+    return duration + 1
+
+def scorearr_to_song(score_arr, sample_freq=SAMPLE_FREQ, bpm=120):
+    duration = m21.duration.Duration(1. / sample_freq)
+    stream = m21.stream.Score()
+    stream.append(m21.meter.TimeSignature(TIMESIG))
+    stream.append(m21.tempo.MetronomeMark(number=bpm))
+    stream.append(m21.key.KeySignature(0))
+    for inst in range(score_arr.shape[1]):
+        p = partarr_to_song(score_arr[:,inst,:], duration)
+        stream.append(p)
+    stream = stream.transpose(0)
+    return stream
+
+def partarr_to_song(part_arr, duration):
+    "convert instrument part to music21 chords"
+    part = m21.stream.Part()
+    part.append(m21.instrument.Piano()) #TODO hier kann man das Instrument mitgeben
+    part_append_duration_notes(part_arr, duration, part) # notes already have duration calculated
+    return part
+
+def part_append_duration_notes(part_arr, duration, stream):
+    "convert instrument part to music21 chords"
+    for tidx,t in enumerate(part_arr):
+        note_idxs = np.where(t > 0)[0] # filter out any negative values (continuous mode)
+        if len(note_idxs) == 0: continue
+        notes = []
+        for nidx in note_idxs:
+            note = m21.note.Note(nidx)
+            note.duration = m21.duration.Duration(part_arr[tidx,nidx]*duration.quarterLength)
+            notes.append(note)
+        for g in group_notes_by_duration(notes):
+            if len(g) == 1:
+                stream.insert(tidx*duration.quarterLength, g[0])
+            else:
+                chord = m21.chord.Chord(g)
+                stream.insert(tidx*duration.quarterLength, chord)
+    return stream
+
+from itertools import groupby
+#  combining notes with different durations into a single chord may overwrite conflicting durations. Example: aylictal/still-waters-run-deep
+def group_notes_by_duration(notes):
+    "separate notes into chord groups"
+    keyfunc = lambda n: n.duration.quarterLength
+    notes = sorted(notes, key=keyfunc)
+    return [list(g) for k,g in groupby(notes, keyfunc)]
+
+def indexarr_to_encodedarr(index_arr, mapping, validate=True):
+    if validate: 
+        index_arr = validate_indexarr(index_arr, mapping.npenc_range)
+    # convert from 1d arr two 2d arr
+    index_arr = index_arr.copy().reshape(-1, 2)
+    if index_arr.shape[0] == 0:
+        return index_arr      
+    index_arr[:, 0] = index_arr[:, 0] - mapping.note_range[0]
+    index_arr[:, 1] = index_arr[:, 1] - mapping.dur_range[0]
+    
+    if validate:
+        return validate_encodedarr(index_arr)
+    return index_arr
+
+def validate_indexarr(t, valid_range):
+    r = valid_range
+    t = t[np.where((t >= r[0]) & (t < r[1]))]
+    if t.shape[-1] % 2 == 1: 
+        t = t[..., :-1]
+    return t
+
+def validate_encodedarr(t):
+    is_note = (t[:, 0] < VALTSEP) | (t[:, 0] >= NOTE_SIZE)
+    invalid_note_idx = is_note.argmax()
+    invalid_dur_idx = (t[:, 1] < 0).argmax()
+
+    invalid_idx = max(invalid_dur_idx, invalid_note_idx)
+    if invalid_idx > 0: 
+        if invalid_note_idx > 0 and invalid_dur_idx > 0: invalid_idx = min(invalid_dur_idx, invalid_note_idx)
+        print('Non midi note detected. Only returning valid portion. Index, seed', invalid_idx, t.shape)
+        return t[:invalid_idx]
+    return t
