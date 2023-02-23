@@ -1,6 +1,6 @@
-import os
 from enum import Enum
-
+from itertools import groupby
+import os
 import music21 as m21
 import numpy as np
 
@@ -28,9 +28,21 @@ def read_single(file_path:str) -> m21.stream.Score:
     return m21.converter.parse(file_path)
 
 def write_midi(song:m21.stream.Score, output_path:str="test.mid") -> None:
+    """Export music21.stream.Score to midi format.
+
+    Args:
+        song (m21.stream.Score): the song
+        output_path (str, optional): filename with path. Defaults to "test.mid".
+    """
     song.write('midi', fp=output_path)
     
 def write_musicxml(song:m21.stream.Score, output_path:str="test.mid") -> None:
+    """Export music21.stream.Score to musicxml format
+
+    Args:
+        song (m21.stream.Score): the song
+        output_path (str, optional): filename with path. Defaults to "test.mid".
+    """
     song.write('musicxml', fp=output_path)
 
 def read_single_from_corpus(corpus_path:str) -> m21.stream.Score:
@@ -231,7 +243,7 @@ def part_append_duration_notes(part_arr, duration, stream):
                 stream.insert(tidx*duration.quarterLength, chord)
     return stream
 
-from itertools import groupby
+
 #  combining notes with different durations into a single chord may overwrite conflicting durations. Example: aylictal/still-waters-run-deep
 def group_notes_by_duration(notes):
     "separate notes into chord groups"
