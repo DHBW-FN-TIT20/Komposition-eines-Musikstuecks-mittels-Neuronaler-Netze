@@ -54,7 +54,7 @@ www.jsbchorales.net</credit-words>
     <score-part id="P1">
       <part-name>Horn 2</part-name>
       <part-abbreviation>Hn 2</part-abbreviation>
-      <score-instrument id="I8d7a9a5da169f32b80ecb80e3514270d">
+      <score-instrument id="I6192ada8114c44d5dd31a63af1d22b9c">
         <instrument-name>Instrument 7</instrument-name>
       </score-instrument>
     </score-part>
@@ -65,28 +65,28 @@ www.jsbchorales.net</credit-words>
     <score-part id="P2">
       <part-name>Soprano</part-name>
       <part-abbreviation>S</part-abbreviation>
-      <score-instrument id="I0ed942d9ef3a90ed684aa84d611243ec">
+      <score-instrument id="I4567809766d21b324a8e107fcce7e681">
         <instrument-name>Instrument 1</instrument-name>
       </score-instrument>
     </score-part>
     <score-part id="P3">
       <part-name>Alto</part-name>
       <part-abbreviation>A</part-abbreviation>
-      <score-instrument id="I85ead48b2469f1e5929ba1c3a9dba0e6">
+      <score-instrument id="I32dac733cad378e5d2dcf6e8c3943d4c">
         <instrument-name>Instrument 2</instrument-name>
       </score-instrument>
     </score-part>
     <score-part id="P4">
       <part-name>Tenor</part-name>
       <part-abbreviation>T</part-abbreviation>
-      <score-instrument id="I6bd56dedbd0a3648597019dc0e6e2831">
+      <score-instrument id="I2032dfad2e12e74d17d28d02b30f8001">
         <instrument-name>Instrument 3</instrument-name>
       </score-instrument>
     </score-part>
     <score-part id="P5">
       <part-name>Bass</part-name>
       <part-abbreviation>B</part-abbreviation>
-      <score-instrument id="I53eb85df10c0720d202c9c6c21fc6afa">
+      <score-instrument id="I508571ae4499227a9047cb931f0548a0">
         <instrument-name>Instrument 4</instrument-name>
       </score-instrument>
     </score-part>

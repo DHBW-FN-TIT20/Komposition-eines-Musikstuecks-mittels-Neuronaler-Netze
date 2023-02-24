@@ -36,12 +36,12 @@ def write_midi(song:m21.stream.Score, output_path:str="test.mid") -> None:
     """
     song.write('midi', fp=output_path)
     
-def write_musicxml(song:m21.stream.Score, output_path:str="test.mid") -> None:
+def write_musicxml(song:m21.stream.Score, output_path:str="test.musicxml") -> None:
     """Export music21.stream.Score to musicxml format
 
     Args:
         song (m21.stream.Score): the song
-        output_path (str, optional): filename with path. Defaults to "test.mid".
+        output_path (str, optional): filename with path. Defaults to "test.musicxml".
     """
     song.write('musicxml', fp=output_path)
 
