@@ -130,5 +130,5 @@ dmypy.json
 
 # Music data
 *.krn
-demos/deutschl
-demos/dataset
+*deutschl*
+*dataset*

@@ -1,0 +1,7 @@
+tensorflow==2.10
+jupyterlab
+matplotlib
+music21
+black
+mypy
+flake8
