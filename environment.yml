@@ -3,12 +3,15 @@ channels:
   - defaults
   - conda-forge
 dependencies:
+  - python=3.9
   - cudatoolkit=11.2
   - cudnn=8.1.0
-  - python=3.9
   - music21
   - jupyterlab
   - pip
   - pip:
-    - tensorflow
+    - tensorflow=2.10
+    - black
+    - flake8
+    - mypy
 prefix: /home/deglasfl/miniconda3/envs/tf-gpu
