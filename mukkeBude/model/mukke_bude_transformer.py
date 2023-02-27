@@ -1,10 +1,18 @@
-import tensorflow_models as tfm
-import inspect
+from transformers import TFTransfoXLModel, AdamWeightDecay, AutoTokenizer
+from datasets import load_dataset
 
-class MukkeBudeTransformer(tfm.nlp.layers.TransformerXL):
-    def __init__(self, *args, encode_position=True, mask_steps=1, **kwargs):       
-        sig = inspect.signature(tfm.nlp.layers.TransformerXL)
-        arg_params = { k:kwargs[k] for k in sig.parameters if k in kwargs }
-        super().__init__(*args, **arg_params)
-        self.encode_position = encode_position            
-        self.mask_steps=mask_steps
+class MukkeBudeTransformer():
+    def __init__(self):    
+        self.tokenizer = AutoTokenizer.from_pretrained("transfo-xl-wt103")   
+        self.model = TFTransfoXLModel.from_pretrained("transfo-xl-wt103")
+        
+    def train(self, train_arr):
+        optimizer = AdamWeightDecay(learning_rate=2e-5, weight_decay_rate=0.01)
+        self.model.compile(optimizer=optimizer, metrics=["accuracy"])
+        history = self.model.fit(x=train_arr, epochs=5) #geht nicht weil der die daten in [x,y] haben will. also y=target. Also so umwandeln wie bei LSTM
+        return history
+        
+        
+    
+    def generate_sequence(self, input):
+        pass

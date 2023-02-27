@@ -10,6 +10,7 @@ python = "^3.9"
 jupyterlab = "^3.6.1"
 music21 = "^8.1.0"
 tensorflow = "<2.11"
+transformers = "^4.26.1"
 
 
 [tool.poetry.group.dev.dependencies]
