@@ -1,8 +1,12 @@
 from enum import Enum
 from itertools import groupby
+from tensorflow import keras
 import os
 import music21 as m21
 import numpy as np
+from datasets import load_dataset
+import json
+from pathlib import Path
 
 BPB = 4 # beats per bar
 TIMESIG = f'{BPB}/4' # default time signature
@@ -15,6 +19,24 @@ DUR_SIZE = (10*BPB*SAMPLE_FREQ)+1 # Max length - 8 bars. Or 16 beats/quarternote
 MAX_NOTE_DUR = (8*BPB*SAMPLE_FREQ)
 
 SEQType = Enum('SEQType', 'Mask, Sentence, Melody, Chords, Empty')
+
+def create_train_data(encoded_song: np.ndarray, sequence_length=64) -> list[dict]:
+    num_sequences = len(encoded_song) - sequence_length
+
+    data = []
+
+    for i in range(num_sequences):
+        input = str(encoded_song[i:i+sequence_length])
+        target = str(encoded_song[i+sequence_length])
+
+        data.append({"input": input, "labels": target})
+
+    path = Path("data.json")
+    path.unlink(missing_ok=True)
+    with path.open("w") as f:
+        json.dump(data, f)
+
+    return data
 
 def read_single(file_path:str) -> m21.stream.Score:
     """Convert file of a song to music21.stream.Score. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
