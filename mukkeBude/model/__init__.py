@@ -1,2 +1,2 @@
-from mukke_bude_transformer import MukkeBudeTransformer
-from mukke_bude_lstm import MukkeBudeLSTM
+from .mukke_bude_transformer import MukkeBudeTransformer
+from .mukke_bude_lstm import MukkeBudeLSTM
