@@ -8,9 +8,11 @@ dependencies:
   - cudnn=8.1.0
   - music21
   - jupyterlab
+  - huggingface::transformers
+  - datasets
   - pip
   - pip:
-    - tensorflow=2.10
+    - tensorflow==2.10
     - black
     - flake8
     - mypy
