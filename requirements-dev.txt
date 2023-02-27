@@ -1,4 +1,6 @@
 tensorflow==2.10
+transformers
+datasets
 jupyterlab
 matplotlib
 music21
