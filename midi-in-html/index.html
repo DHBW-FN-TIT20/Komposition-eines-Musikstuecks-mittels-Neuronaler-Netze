@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>MIDI Viewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <midi-player id="midi-player" src="Title.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="Title.mid"></midi-visualizer>
+    <midi-visualizer id="staff-visualizer" type="staff" src="Title.mid"><h2>Sheet-Music:</h2></midi-visualizer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+<script src="script.js"></script>
+</html>
