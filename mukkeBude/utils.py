@@ -20,7 +20,7 @@ MAX_NOTE_DUR = (8*BPB*SAMPLE_FREQ)
 
 SEQType = Enum('SEQType', 'Mask, Sentence, Melody, Chords, Empty')
 
-def create_train_data(encoded_song: np.ndarray, sequence_length=64) -> list[dict]:
+def create_train_data(encoded_song: np.ndarray, sequence_length=32) -> list[dict]:
     num_sequences = len(encoded_song) - sequence_length
 
     data = []
@@ -34,7 +34,7 @@ def create_train_data(encoded_song: np.ndarray, sequence_length=64) -> list[dict
     path = Path("data.json")
     path.unlink(missing_ok=True)
     with path.open("w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=None)
 
     return data
 
