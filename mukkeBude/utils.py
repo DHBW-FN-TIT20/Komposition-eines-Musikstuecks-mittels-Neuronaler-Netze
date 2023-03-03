@@ -20,7 +20,7 @@ MAX_NOTE_DUR = (8*BPB*SAMPLE_FREQ)
 
 SEQType = Enum('SEQType', 'Mask, Sentence, Melody, Chords, Empty')
 
-def create_train_data(encoded_song: np.ndarray, sequence_length=32) -> list[dict]:
+def create_train_data_json(encoded_song: np.ndarray, sequence_length=32) -> list[dict]:
     num_sequences = len(encoded_song) - sequence_length
 
     data = []
@@ -37,6 +37,10 @@ def create_train_data(encoded_song: np.ndarray, sequence_length=32) -> list[dict
         json.dump(data, f, indent=None)
 
     return data
+
+def create_train_data(encoded_song: str, path:str, sequence_length=32) -> None:
+    with open(path, 'a') as f:
+        f.append(f"{encoded_song}\n")
 
 def read_single(file_path:str) -> m21.stream.Score:
     """Convert file of a song to music21.stream.Score. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml

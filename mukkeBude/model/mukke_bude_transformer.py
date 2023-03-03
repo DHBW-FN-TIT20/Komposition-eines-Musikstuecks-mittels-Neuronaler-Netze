@@ -1,93 +1,125 @@
-from transformers import TFTransfoXLLMHeadModel, TFTransfoXLModel, TransfoXLConfig, AdamWeightDecay, TransfoXLTokenizer, TFTrainer, TFTrainingArguments, DataCollatorWithPadding
-from datasets import Dataset, load_dataset
-import numpy as np
-import json
-from pathlib import Path
+import os
+import keras_nlp
 import tensorflow as tf
+from tensorflow import keras
+
+# Data
+BATCH_SIZE = 64
+SEQ_LEN = 128
+MIN_TRAINING_SEQ_LEN = 450
+
+# Model
+EMBED_DIM = 256
+FEED_FORWARD_DIM = 256
+NUM_HEADS = 3
+NUM_LAYERS = 2
+VOCAB_SIZE = 5000  # Limits parameters in model.
+
+# Training
+EPOCHS = 6
+
+# Inference
+NUM_TOKENS_TO_GENERATE = 80
 
 class MukkeBudeTransformer():
-    def __init__(self):
-        self.tokenizer = TransfoXLTokenizer.from_pretrained("transfo-xl-wt103")
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+    def __init__(self, mapping):
+        self.mapping = mapping
         
-        # Initializing a Transformer XL configuration
-        configuration = TransfoXLConfig()
-        self.model = TFTransfoXLModel.from_pretrained("transfo-xl-wt103")
-
-        self.optimizer = AdamWeightDecay(learning_rate=2e-5, weight_decay_rate=0.01)
-        # self.loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-
-        # self.model.compile(optimizer=optimizer, metrics=["accuracy"])
-        
-    def train(self, data, batch_size: int = 16):
-        
-        train_dataset = self.getDataset(data, batch_size)
-        self.model.compile(
-            optimizer=self.optimizer,
-            loss='sparse_categorical_crossentropy',
-            metrics=["accuracy"]
+        inputs = keras.layers.Input(shape=(None,), dtype=tf.int32)
+        # Embedding.
+        embedding_layer = keras_nlp.layers.TokenAndPositionEmbedding(
+            vocabulary_size=len(mapping),
+            sequence_length=SEQ_LEN,
+            embedding_dim=EMBED_DIM,
+            mask_zero=True,
         )
-        # self.model.build(input_shape=(None, 1020, 64))
+        x = embedding_layer(inputs)
+        # Transformer decoders.
+        for _ in range(NUM_LAYERS):
+            decoder_layer = keras_nlp.layers.TransformerDecoder(
+                num_heads=NUM_HEADS,
+                intermediate_dim=FEED_FORWARD_DIM,
+            )
+            x = decoder_layer(x)  # Giving one argument only skips cross-attention.
+        # Output.
+        outputs = keras.layers.Dense(len(mapping))(x)
+        self.model = keras.Model(inputs=inputs, outputs=outputs)
+        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        perplexity = keras_nlp.metrics.Perplexity(from_logits=True, mask_token_id=0)
+        self.model.compile(optimizer="adam", loss=loss_fn, metrics=[perplexity])
         self.model.summary()
-        # self.model.fit(x=train_dataset, epochs=10)
-        training_args = TFTrainingArguments(
-            output_dir="./",
-            num_train_epochs=3,
-            auto_find_batch_size=True,
-            do_train=True
-        )
-        
-        # with training_args.strategy.scope():
-        #     model = TFTransfoXLModel.from_pretrained("transfo-xl-wt103")
-            
-        trainer = TFTrainer(
-            model=self.model,
-            args=training_args,
-            train_dataset=train_dataset
-        )
-        
-        trainer.train()
-        
+
+    def train(self):
+        self.model.fit(self.train_ds, validation_data=self.val_ds, verbose=2, epochs=EPOCHS)
+
+    def generate(self, input):
+        # Unpadded bos token.
+        prompt_tokens = tf.convert_to_tensor([self.tokenizer.token_to_id("[BOS]")])
+        output_tokens = keras_nlp.utils.greedy_search(
+        self.token_logits_fn,
+        prompt_tokens,
+        max_length=NUM_TOKENS_TO_GENERATE)
+        txt = self.tokenizer.detokenize(output_tokens)
+        print(f"Greedy search generated text: \n{txt}\n")
+
     
-    def generate_sequence(self, input):
-        pass
+    def token_logits_fn(self, inputs):
+        cur_len = inputs.shape[1]
+        output = self.model(inputs)
+        return output[:, cur_len - 1, :]  # return next token logits
 
-    def _loadDataset(self, data: list):
-        dataset = load_dataset("json", data_files="./data.json")
-        return dataset
 
-    def _preprocess_dataset(self, dataset):            
-        inputs = self.tokenizer(dataset["input"],  truncation=True, padding="max_length",  max_length=64)
-        labels = self.tokenizer(dataset["labels"], truncation=True, padding="max_length",  max_length=1, return_tensors="tf")
-        # model_inputs = {
-        #     "inputs": inputs,
-        #     "labels": labels
-        # }
-        inputs["label"] = labels.input_ids
-        return inputs
+    def loadDataset(self):
+        keras.utils.get_file(
+        origin="https://dldata-public.s3.us-east-2.amazonaws.com/simplebooks.zip",
+        extract=True,
+        )
+        dir = os.path.expanduser("~/.keras/datasets/simplebooks/")
 
-    def getDataset(self, data: list, batch_size: int = 16):
-        #Get raw data from JSON
-        raw_dataset = self._loadDataset(data)
-        #Tokenzize data
-        tokenized_dataset = raw_dataset.map(self._preprocess_dataset)
-        print(tokenized_dataset)
-        print(tokenized_dataset["train"]["input"][0])
-        print(tokenized_dataset["train"]["label"][0])
-        print(tokenized_dataset["train"]["input_ids"][0])
-        print(tokenized_dataset["train"]["input"][1])
-        print(tokenized_dataset["train"]["label"][1])
-        print(tokenized_dataset["train"]["input_ids"][1])
-        temp = tokenized_dataset["train"]["label"][0]
-        #init DataCollator
-        data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer, return_tensors="tf")
-        
-        train_dataset = tokenized_dataset["train"].to_tf_dataset(
-            columns=["input_ids"],
-            label_cols=["label"],
-            shuffle=True,
-            batch_size=32,
-            collate_fn=data_collator
+        # Load simplebooks-92 train set and filter out short lines.
+        self.raw_train_ds = (
+            tf.data.TextLineDataset(dir + "simplebooks-92-raw/train.txt")
+            .filter(lambda x: tf.strings.length(x) > MIN_TRAINING_SEQ_LEN)
+            .batch(BATCH_SIZE)
+            .shuffle(buffer_size=256)
         )
 
-        return train_dataset
+        # Load simplebooks-92 validation set and filter out short lines.
+        self.raw_val_ds = (
+            tf.data.TextLineDataset(dir + "simplebooks-92-raw/valid.txt")
+            .filter(lambda x: tf.strings.length(x) > MIN_TRAINING_SEQ_LEN)
+            .batch(BATCH_SIZE)
+        )
+        
+        # Train tokenizer vocabulary
+        self.vocab = keras_nlp.tokenizers.compute_word_piece_vocabulary(
+        self.raw_train_ds,
+        vocabulary_size=len(self.mapping),
+        lowercase=True,
+        reserved_tokens=["[PAD]", "[UNK]", "[BOS]"])
+        
+        self.tokenizer = keras_nlp.tokenizers.WordPieceTokenizer(
+        vocabulary=self.vocab,
+        sequence_length=SEQ_LEN,
+        lowercase=True)
+        
+        # packer adds a start token
+        self.start_packer = keras_nlp.layers.StartEndPacker(
+            sequence_length=SEQ_LEN,
+            start_value=self.tokenizer.token_to_id("[BOS]"),
+        )
+
+    def preprocess(self, inputs):
+        outputs = self.tokenizer(inputs)
+        features = self.start_packer(outputs)
+        labels = outputs
+        return features, labels
+
+    def getDataset(self):
+        # Tokenize and split into train and label sequences.
+        self.train_ds = self.raw_train_ds.map(self.preprocess, num_parallel_calls=tf.data.AUTOTUNE).prefetch(
+            tf.data.AUTOTUNE
+        )
+        self.val_ds = self.raw_val_ds.map(self.preprocess, num_parallel_calls=tf.data.AUTOTUNE).prefetch(
+            tf.data.AUTOTUNE
+        )
