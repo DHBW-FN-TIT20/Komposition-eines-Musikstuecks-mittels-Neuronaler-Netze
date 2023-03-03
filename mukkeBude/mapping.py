@@ -59,6 +59,9 @@ class MusicMapping():
     def save(self, path):
         "Save `self.itos` in `path`"
         pickle.dump(self.itos, open(path, 'wb'))
+        with open(path, 'w') as f:
+            for line in self.itos:
+                f.write(f"{line} ")
 
     @classmethod
     def create(cls) -> 'MusicMapping':
