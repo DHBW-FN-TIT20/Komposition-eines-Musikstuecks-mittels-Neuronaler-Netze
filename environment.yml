@@ -8,12 +8,16 @@ dependencies:
   - cudnn=8.1.0
   - music21
   - jupyterlab
-  - huggingface::transformers
-  - datasets
+  # - huggingface::transformers
+  # - datasets
   - pip
   - pip:
-    - tensorflow==2.10
+    - tensorflow==2.11
     - black
     - flake8
     - mypy
-prefix: /home/deglasfl/miniconda3/envs/tf-gpu
+    - transformers
+    - datasets
+    - sacremoses
+    - keras-nlp
+# prefix: /home/deglasfl/miniconda3/envs/tf-gpu
