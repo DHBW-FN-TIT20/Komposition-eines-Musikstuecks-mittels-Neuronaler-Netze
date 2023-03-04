@@ -1,10 +1,6 @@
-tensorflow==2.11
-transformers
-datasets
+tensorflow==2.10.*
 sacremoses
 keras-nlp
 jupyterlab
 matplotlib
 music21
-transformers
-datasets
