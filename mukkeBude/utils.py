@@ -1,6 +1,5 @@
 import json
 import os
-import textwrap
 from enum import Enum
 from itertools import groupby
 from pathlib import Path
@@ -42,24 +41,22 @@ def create_train_data_json(encoded_song: np.ndarray, sequence_length=32) -> list
     return data
 
 
-def create_train_data(encoded_songs: List[str], path: os.PathLike, sequence_length=64) -> None:
-    """Create training data from encoded songs
+def create_train_data(encoded_songs: List[str], path: os.PathLike) -> None:
+    """Create training data from encoded songs. Each song is written to a new line.
+    xxbos and xxpad tokens are removed.
 
     Args:
         encoded_songs (List[str]): list of encoded songs
         path (os.PathLike): path to file
-        sequence_length (int, optional): length of sequence. Defaults to 64.
     """
-    encoded_song = " ".join(encoded_songs)
-    splitted_song = textwrap.wrap(encoded_song, sequence_length)
-
     # Check if file exists, if so, delete it
     if os.path.exists(path):
         os.remove(path)
 
     with open(path, "a") as f:
-        for split in splitted_song:
-            f.write(split + "\n")
+        for song in encoded_songs:
+            song = song.replace("xxbos ", "").replace("xxpad ", "")
+            f.write(song + "\n")
 
 
 def read_single(file_path: str) -> Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]:
