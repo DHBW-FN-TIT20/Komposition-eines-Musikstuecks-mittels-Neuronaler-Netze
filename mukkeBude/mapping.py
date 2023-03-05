@@ -10,8 +10,8 @@ SEP = "xxsep"  # Used to denote end of timestep (required for polyphony). separa
 
 SPECIAL_TOKS = [BOS, PAD, EOS, SEP]  # Important: SEP token must be last
 
-NOTE_TOKS = [f"n{i}" for i in range(NOTE_SIZE)]
-DUR_TOKS = [f"d{i}" for i in range(DUR_SIZE)]
+NOTE_TOKS = [f"n{i}" for i in range(NOTE_SIZE)]  # type: ignore
+DUR_TOKS = [f"d{i}" for i in range(DUR_SIZE)]  # type: ignore
 NOTE_START, NOTE_END = NOTE_TOKS[0], NOTE_TOKS[-1]
 DUR_START, DUR_END = DUR_TOKS[0], DUR_TOKS[-1]
 

@@ -6,8 +6,6 @@ from tensorflow import keras
 
 # Data
 BATCH_SIZE = 64
-SEQ_LEN = 128
-MIN_TRAINING_SEQ_LEN = 450
 
 # Model
 EMBED_DIM = 256
@@ -16,9 +14,6 @@ NUM_HEADS = 3
 NUM_LAYERS = 2
 VOCAB_SIZE = 5000  # Limits parameters in model.
 
-# Training
-EPOCHS = 6
-
 # Inference
 NUM_TOKENS_TO_GENERATE = 80
 
@@ -26,14 +21,17 @@ NUM_TOKENS_TO_GENERATE = 80
 class MukkeBudeTransformer:
     def __init__(self, mapping):
         self.mapping = mapping
+        # self.vocabulary_size = len(mapping) + 1 # +1 for [UNK] token
+        self.vocabulary_size = 1000
 
         inputs = keras.layers.Input(shape=(None,), dtype=tf.int32)
 
         # Embedding.
+        # Token and position embeddings are ways of representing words and their order in a sentence
         embedding_layer = keras_nlp.layers.TokenAndPositionEmbedding(
-            vocabulary_size=len(mapping),
-            sequence_length=SEQ_LEN,
-            embedding_dim=EMBED_DIM,
+            vocabulary_size=self.vocabulary_size,
+            sequence_length=128,  # TODO make this dynamic
+            embedding_dim=EMBED_DIM,  # The output dimension of the embedding layer
             mask_zero=True,
         )
         x = embedding_layer(inputs)
@@ -47,7 +45,7 @@ class MukkeBudeTransformer:
             x = decoder_layer(x)  # Giving one argument only skips cross-attention.
 
         # Output.
-        outputs = keras.layers.Dense(len(mapping))(x)
+        outputs = keras.layers.Dense(self.vocabulary_size)(x)
         self.model = keras.Model(inputs=inputs, outputs=outputs)
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         perplexity = keras_nlp.metrics.Perplexity(from_logits=True, mask_token_id=0)
@@ -57,17 +55,25 @@ class MukkeBudeTransformer:
     def train(
         self,
         path: os.PathLike,
-        vocabulary_size: int,
         min_training_seq_len: int = 64,
+        seq_len: int = 128,
         batch_size: int = 64,
         buffer_size: int = 256,
+        epochs: int = 12,
     ) -> tf.keras.callbacks.History:
-        self.__loadDataset(path, vocabulary_size, min_training_seq_len, batch_size, buffer_size)
+        self.__loadDataset(
+            path=path,
+            min_training_seq_len=min_training_seq_len,
+            seq_len=seq_len,
+            batch_size=batch_size,
+            buffer_size=buffer_size,
+        )
 
         self.train_ds = self.raw_train_ds.map(self.__preprocess, num_parallel_calls=tf.data.AUTOTUNE).prefetch(
             tf.data.AUTOTUNE,
         )
-        return self.model.fit(self.train_ds, verbose=2, epochs=EPOCHS)
+
+        return self.model.fit(self.train_ds, verbose=2, epochs=epochs)
 
     def generate(self, input: str, max_length: int = 128) -> str:
         # Unpadded bos token.
@@ -81,8 +87,7 @@ class MukkeBudeTransformer:
             max_length=max_length,
         )
         txt = self.tokenizer.detokenize(output_tokens)
-        clean_txt = self.__removeTokens(txt)
-        return clean_txt
+        return txt
 
     def token_logits_fn(self, inputs):
         cur_len = inputs.shape[1]
@@ -92,11 +97,21 @@ class MukkeBudeTransformer:
     def __loadDataset(
         self,
         path: os.PathLike,
-        vocabulary_size: int,
-        min_training_seq_len: int = 64,
-        batch_size: int = 64,
+        min_training_seq_len: int = 16,
+        seq_len: int = 32,
+        batch_size: int = 16,
         buffer_size: int = 256,
+        special_tokens: list = ["xxpad", "[UNK]", "xxbos", "xxeos", "xxsep"],
     ):
+        """load the dataset for the model. Each line in the dataset file is a training example.
+
+        :param path: Path to the dataset
+        :param min_training_seq_len: Each line in the file with less than `min_training_seq_len` will be removed, defaults to 64
+        :param seq_len: Length that each line got splittet for the model, defaults to 128
+        :param batch_size: How many lines to give the model (does not batch the line), defaults to 16
+        :param buffer_size: Buffer size for shuffel each lines in the dataset, defaults to 256
+        :param special_tokens: Tokens that need to be included in the vocabulary. First Token need to be the default padding token, defaults to ["xxpad", "[UNK]", "xxbos", "xxeos", "xxsep"]
+        """
         # Load train set and filter out short lines.
         self.raw_train_ds = (
             tf.data.TextLineDataset(path)
@@ -106,16 +121,16 @@ class MukkeBudeTransformer:
         )
 
         # Train tokenizer vocabulary
-        vocabulary_size += 3  # Add 3 for [PAD], [UNK], [BOS].
         self.vocab = keras_nlp.tokenizers.compute_word_piece_vocabulary(
             self.raw_train_ds,
-            vocabulary_size=vocabulary_size,
+            vocabulary_size=self.vocabulary_size,
             lowercase=True,
-            reserved_tokens=[
-                "[PAD]",  # padding token used to pad sequences to the same length /
-                "[UNK]",  # out-of-vocabulary (OOV) sub-words / unknown words are replaced with this token
-                "[BOS]",  # stands for beginning of sentence, but here technically it is a token representing the beginning of each line of training data
-            ],
+            reserved_tokens=special_tokens,
+            # reserved_tokens=[
+            #     "[PAD]",  # padding token used to pad sequences to the same length /
+            #     "[UNK]",  # out-of-vocabulary (OOV) sub-words / unknown words are replaced with this token
+            #     "[BOS]",  # stands for beginning of sentence, but here technically it is a token representing the beginning of each line of training data
+            # ],
         )
 
         # Load tokenizer
@@ -123,14 +138,14 @@ class MukkeBudeTransformer:
         # It will strip, lower-case and do other irreversible preprocessing operations
         self.tokenizer = keras_nlp.tokenizers.WordPieceTokenizer(
             vocabulary=self.vocab,
-            sequence_length=SEQ_LEN,
+            sequence_length=seq_len,
             lowercase=True,
         )
 
         # packer adds a start token
         self.start_packer = keras_nlp.layers.StartEndPacker(
-            sequence_length=SEQ_LEN,
-            start_value=self.tokenizer.token_to_id("[BOS]"),
+            sequence_length=seq_len,
+            start_value=self.tokenizer.token_to_id(special_tokens[3]),  # xxbos
         )
 
     def __preprocess(self, inputs):
@@ -138,15 +153,6 @@ class MukkeBudeTransformer:
         features = self.start_packer(outputs)
         labels = outputs
         return features, labels
-
-    def __removeTokens(self, inputs):
-        return self.__removeStartToken(self.__removePadding(inputs))
-
-    def __removePadding(self, inputs):
-        return tf.strings.regex_replace(inputs, "\s{0,2}\[PAD\]\s{0,2}", " ")
-
-    def __removeStartToken(self, inputs):
-        return tf.strings.regex_replace(inputs, "\s{0,2}\[BOS\]\s{0,2}", " ")
 
     def __str__(self) -> str:
         text = []
