@@ -7,6 +7,13 @@ body {
     background-color: #000;
 }
 
+button {
+    padding: 4px;
+    display: flex;
+    margin: 8px auto 0 auto;
+    cursor: pointer;
+}
+
 /* Custom player style */
 midi-player {
     display: block;
@@ -58,11 +65,11 @@ midi-visualizer h2 {
 }
 
 .piano-roll-visualizer svg rect.note[data-instrument="0"]{
-    fill: #ff000099;
+    fill: #0000ff99;
 }
 
 .piano-roll-visualizer svg rect.note[data-instrument="1"]{
-    fill: #0000ff99;
+    fill: #ff000099;
 }
 
 .piano-roll-visualizer svg rect.note[data-instrument="2"]{
