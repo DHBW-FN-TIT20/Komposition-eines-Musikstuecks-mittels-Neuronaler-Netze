@@ -39,29 +39,6 @@ midi-player::part(time) {
     font-family: monospace;
 }
 
-midi-visualizer svg rect.note {
-    opacity: 0.6;
-}
-
-midi-visualizer svg rect.note[data-instrument="0"]{
-    fill: #00f;
-}
-
-midi-visualizer svg rect.note[data-instrument="2"]{
-    fill: #f00;
-}
-
-midi-visualizer svg rect.note[data-is-drum="true"]{
-    fill: #000;
-}
-
-midi-visualizer svg rect.note.active {
-    fill: #0f0;
-    opacity: 1;
-    stroke: #000;
-    stroke-width: 1;
-}
-
 /* Custom visualizer style */
 midi-visualizer {
     background: #fff;
@@ -72,6 +49,47 @@ midi-visualizer {
     border-top: none;
 }
 
+midi-visualizer h2 {
+    padding: 16px;
+}
+
+.piano-roll-visualizer svg, .staff-visualizer svg {
+    padding: 16px;
+}
+
+.piano-roll-visualizer svg rect.note[data-instrument="0"]{
+    fill: #ff000099;
+}
+
+.piano-roll-visualizer svg rect.note[data-instrument="1"]{
+    fill: #0000ff99;
+}
+
+.piano-roll-visualizer svg rect.note[data-instrument="2"]{
+    fill: #ffff0099;
+}
+
+.piano-roll-visualizer svg rect.note[data-instrument="3"]{
+    fill: #ff00ff99;
+}
+
+.piano-roll-visualizer svg rect.note[data-instrument="4"]{
+    fill: #00ffff99;
+}
+
+.piano-roll-visualizer svg rect.note[data-is-drum="true"]{
+    fill: #ffffff;
+    stroke: #aaa;
+    stroke-width: 1;
+}
+
+.piano-roll-visualizer svg rect.note.active {
+    fill: #0f0;
+    opacity: 1;
+    stroke: #000;
+    stroke-width: 1;
+}
+
 .staff-visualizer:first-child {
     margin: 8px;
 }
@@ -79,8 +97,4 @@ midi-visualizer {
 .staff-visualizer > div > svg {
     background-color: #fff;
     padding-right: 0;
-}
-
-.staff-visualizer svg {
-    padding: 16px;
 }
