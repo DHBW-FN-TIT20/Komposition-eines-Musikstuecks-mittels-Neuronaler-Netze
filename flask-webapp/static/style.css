@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Inconsolata', sans-serif;
+    display: grid;
+    grid-template-columns: 400px 5px calc(100% - 405px);
+    height: 100%;
+}
+
+button {
+    padding: 4px;
+    cursor: pointer;
+}
+
+#main {
+    min-width: 790px;
+    justify-content: center;
+    display: flex;
+    overflow: auto;
+}
+
+#sideboard {
+    justify-content: space-between;
+}
+
+.center {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.max-100 {
+    max-width: 100%;
+}
+
+.pad-16 {
+    padding: 16px;
+}
+
+.bottom-16 {
+    margin-bottom: 16px;
+}
+
+.gap-8 * {
+    margin-bottom: 8px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.flex-column-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+#abcjs {
+    background-color: #fff;
+    color: #000;
+    border-radius: 10px;
+    padding: 10px;
+    width: fit-content;
+}
+
+/* Custom player style */
+midi-player {
+    display: block;
+    height: 60px;
+    width: inherit;
+    margin-bottom: 1px;
+    color: #000;
+}
+
+midi-player::part(control-panel) {
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+}
+
+midi-player::part(play-button) {
+    color: #000;
+    background: #fff;
+    border: 1px solid #888;
+    border-radius: 20px;
+    transition: all 0.1s;
+}
+
+midi-player::part(play-button):hover {
+    box-shadow: #aaa 1px 1px 1px;
+}
+
+midi-player::part(time) {
+    font-family: monospace;
+}
+
+/* Custom visualizer style */
+midi-visualizer {
+    color: #000;
+    background: #fff;
+    margin-bottom: 16px;
+    overflow: auto hidden;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+}
+
+midi-visualizer h2 {
+    padding: 16px;
+}
+
+midi-visualizer svg {
+    padding: 16px;
+}
+
+midi-visualizer svg rect.note[data-instrument="0"]{
+    fill: #0000ff99;
+}
+
+midi-visualizer svg rect.note[data-instrument="1"]{
+    fill: #ff000099;
+}
+
+midi-visualizer svg rect.note[data-instrument="2"]{
+    fill: #ffff0099;
+}
+
+midi-visualizer svg rect.note[data-instrument="3"]{
+    fill: #ff00ff99;
+}
+
+midi-visualizer svg rect.note[data-instrument="4"]{
+    fill: #00ffff99;
+}
+
+midi-visualizer svg rect.note[data-is-drum="true"]{
+    fill: #ffffff;
+    stroke: #aaa;
+    stroke-width: 1;
+}
+
+midi-visualizer svg rect.note.active {
+    fill: #0f0;
+    opacity: 1;
+    stroke: #000;
+    stroke-width: 1;
+}

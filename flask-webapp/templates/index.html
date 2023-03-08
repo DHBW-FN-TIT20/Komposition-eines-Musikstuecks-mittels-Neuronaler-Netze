@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>MIDI Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div id="sideboard" class="flex-column pad-16">
+        <div id="generate" class="flex-column-center bottom-16">
+            <h2>Auswahl Präferenzen:</h2>
+            <div id="choose-preset" class="flex-column">
+                <div id="choose-model" class="gap-8">
+                    <h3 class="text-center">Model:</h3>
+                    <input type="radio" id="lstm" name="model" value="LSTM" checked>
+                    <label for="lstm">LSTM</label><br>
+                    <input type="radio" id="transformer" name="model" value="Transformer">
+                    <label for="transformer">Transformer</label><br>
+                </div>
+
+                <div id="choose-length" class="gap-8">
+                    <h3 class="text-center">Länge:</h3>
+                    <input type="radio" id="lgth1" name="length" value="5" checked>
+                    <label for="lgth1">5 Takte</label><br>
+                    <input type="radio" id="lgth2" name="length" value="10">
+                    <label for="lgth2">10 Takte</label><br>
+                    <input type="radio" id="lgth3" name="length" value="20">
+                    <label for="lgth3">20 Takte</label><br>
+                </div>
+            </div>
+            <button id="generate-button">Generierung starten (not implemented)</button>
+        </div>
+
+        <div id="choose-example" class="flex-column-center bottom-16">
+            <h2>Beispiel-Sounds:</h2>
+            {% for ex in exampleFiles %}
+                <button class="bt-center" onclick="window.location.href='/{{ ex|e }}';">{{ ex|e }}</button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="background: #fff;"></div>
+
+    <div id="main" class="pad-16">
+        <div class="max-100">
+            {% if midi %}
+                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc-examples') }}/{{ midi|e }}.abc">Generierter Sound:</h2>
+                <midi-player id="midi-player" src="{{ url_for('static', filename='midi-examples') }}/{{ midi|e }}" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi-examples') }}/{{ midi|e }}"></midi-visualizer>
+            {% else %}
+                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc-examples') }}/Zelda.mid.abc">Beispiel:</h2>
+                <midi-player id="midi-player" src="{{ url_for('static', filename='midi-examples') }}/Zelda.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi-examples') }}/Zelda.mid"></midi-visualizer>
+            {% endif %}
+            <div id="abcjs" class="center bottom-16"></div>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+<script src="{{ url_for('static', filename='abcjs.min.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</html>
