@@ -37,7 +37,7 @@
         <div id="choose-example" class="flex-column-center bottom-16">
             <h2>Beispiel-Sounds:</h2>
             {% for ex in exampleFiles %}
-                <button class="bt-center" onclick="window.location.href='/{{ ex|e }}';">{{ ex|e }}</button>
+                <button class="bt-center" onclick="window.location.href='/{{ ex|e }}?example=true';">{{ ex|e }}</button>
             {% endfor %}
         </div>
     </div>

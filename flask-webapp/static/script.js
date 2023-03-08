@@ -1,3 +1,8 @@
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('example') == true || urlParams.get('example') == 'true') {
+    document.getElementById('abc-file-location').innerHTML = 'Beispiel:';
+}
+
 let abcString = '';
 let xmlhttp = new XMLHttpRequest();
 const abcFileLocation = document.getElementById('abc-file-location').getAttribute('abcfilelocation');

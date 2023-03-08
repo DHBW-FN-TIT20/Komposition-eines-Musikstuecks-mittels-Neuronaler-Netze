@@ -130,23 +130,23 @@ midi-visualizer svg {
 }
 
 midi-visualizer svg rect.note[data-instrument="0"]{
-    fill: #0000ff99;
+    fill: #0000ffbb;
 }
 
 midi-visualizer svg rect.note[data-instrument="1"]{
-    fill: #ff000099;
+    fill: #ffaa00bb;
 }
 
 midi-visualizer svg rect.note[data-instrument="2"]{
-    fill: #ffff0099;
+    fill: #ff0000bb;
 }
 
 midi-visualizer svg rect.note[data-instrument="3"]{
-    fill: #ff00ff99;
+    fill: #00aaaabb;
 }
 
 midi-visualizer svg rect.note[data-instrument="4"]{
-    fill: #00ffff99;
+    fill: #aa00ffbb;
 }
 
 midi-visualizer svg rect.note[data-is-drum="true"]{
