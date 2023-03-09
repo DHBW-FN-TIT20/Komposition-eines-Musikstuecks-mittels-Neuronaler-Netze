@@ -65,16 +65,19 @@
         </div>
     </div>
 
-    <div id="links" class="grid-links">
-        <a href="https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
-            <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
-            <span>GitHub-Repository</span>
-        </a>
-        <a href="https://github.com/DHBW-FN-TIT20/Dokumentation-Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
-            <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
-            <span>GitHub-Dokumentation</span>
-        </a>
+    <div id="links" class="hidden">
+        <div class="grid-links bottom-32">
+            <a href="https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+                <span>GitHub-Repository</span>
+            </a>
+            <a href="https://github.com/DHBW-FN-TIT20/Dokumentation-Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+                <span>GitHub-Dokumentation</span>
+            </a>
+        </div>
     </div>
+    <button id="toggleLinks" onclick="toggleLinks()">i</button>
 </body>
 
 <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>

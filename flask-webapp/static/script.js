@@ -1,3 +1,5 @@
+const links = document.getElementById('links');
+const linkButton = document.getElementById('toggleLinks');
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('example') == true || urlParams.get('example') == 'true') {
     document.getElementById('abc-file-location').innerHTML = 'Beispiel:';
@@ -22,3 +24,13 @@ abcString = abcString.split(/\r?\n/) // Split input text into an array of lines
 
 let visualOptions = {  };
 window.ABCJS.renderAbc('abcjs', abcString, visualOptions);
+
+let toggleLinks = () => {
+    if (links.className == 'hidden') {
+        links.className = 'visible';
+        linkButton.innerHTML = 'X';
+    } else {
+        links.className = 'hidden';
+        linkButton.innerHTML = 'i';
+    }
+}
