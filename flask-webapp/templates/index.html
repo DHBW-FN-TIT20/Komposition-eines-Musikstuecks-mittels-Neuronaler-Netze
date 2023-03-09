@@ -49,16 +49,16 @@
     <div id="main" class="pad-16">
         <div class="max-100">
             {% if midi %}
-                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc-examples') }}/{{ midi|e }}.abc">Generierter Sound:</h2>
+                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">Generierter Sound:</h2>
                 <div class="min-790">
-                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi-examples') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
-                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi-examples') }}/{{ midi|e }}.mid"></midi-visualizer>
+                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid"></midi-visualizer>
                 </div>
             {% else %}
-                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc-examples') }}/Zelda.abc">Beispiel:</h2>
+                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc') }}/Zelda.abc">Beispiel:</h2>
                 <div class="min-790">
-                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi-examples') }}/Zelda.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
-                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi-examples') }}/Zelda.mid"></midi-visualizer>
+                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/Zelda.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/Zelda.mid"></midi-visualizer>
                 </div>
             {% endif %}
             <div id="abcjs" class="center bottom-16"></div>

@@ -1,8 +1,8 @@
 from os import listdir
 from os.path import isfile, join, splitext
 
-midiLocation = 'static/midi-examples'
-abcLocation = 'static/abc-examples'
+midiLocation = 'static/midi'
+abcLocation = 'static/abc'
 midiExamples = [f for f in listdir(midiLocation) if isfile(join(midiLocation, f))]
 abcExamples = [f for f in listdir(abcLocation) if isfile(join(abcLocation, f))]
 exampleFiles = [splitext(f)[0] for f in midiExamples if f'{splitext(f)[0]}.abc' in abcExamples]
