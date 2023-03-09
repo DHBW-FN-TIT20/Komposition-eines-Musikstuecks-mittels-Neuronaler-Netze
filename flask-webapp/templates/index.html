@@ -9,13 +9,13 @@
 </head>
 
 <body>
-    <div id="sideboard" class="flex-column pad-16">
-        <div id="generate" class="flex-column-center bottom-16">
-            <h2>Auswahl Präferenzen:</h2>
+    <div id="sideboard" class="flex-column" style="gap: 0;">
+        <div id="generate" class="flex-column-center pad-16">
+            <h2 class="bottom-16">Generierung:</h2>
             <div id="choose-preset" class="flex-column">
                 {% for s in settings %}
                     <div id="choose-{{ s.id }}" class="grid-preference">
-                        <h3 class="nowrap-ellipsis">{{ s.name }}:</h3>
+                        <h3 class="nowrap-ellipsis text-right">{{ s.name }}:</h3>
                         <div class="gap-8">
                             {% for rb in s.radioButtons %}
                                 <div class="nowrap-ellipsis">
@@ -29,14 +29,15 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <hr>
                 {% endfor %}
+                <button id="generate-button" class="center bottom-8">Generierung starten (not implemented)</button>
             </div>
-            <button id="generate-button">Generierung starten (not implemented)</button>
         </div>
 
-        <div id="choose-example" class="flex-column-center bottom-16">
-            <h2>Beispiel-Sounds:</h2>
+        <hr style="height: 5px; min-height: 5px; background: #fff; border: 0;">
+
+        <div id="choose-example" class="flex-column-center pad-16">
+            <h2>Beispiele:</h2>
             {% for ex in exampleFiles %}
                 <button class="bt-center" onclick="window.location.href='/{{ ex|e }}?example=true';">{{ ex|e }}</button>
             {% endfor %}
@@ -58,6 +59,17 @@
             {% endif %}
             <div id="abcjs" class="center bottom-16"></div>
         </div>
+    </div>
+
+    <div id="links" class="grid-links">
+        <a href="https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+            <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+            <span>GitHub-Repository</span>
+        </a>
+        <a href="https://github.com/DHBW-FN-TIT20/Dokumentation-Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+            <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+            <span>GitHub-Dokumentation</span>
+        </a>
     </div>
 </body>
 
