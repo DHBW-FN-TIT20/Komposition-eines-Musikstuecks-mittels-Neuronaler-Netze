@@ -236,7 +236,7 @@ midi-visualizer svg rect.note.active {
 #links a span {
     text-decoration: underline;
     text-decoration-color: transparent;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease-out;
 }
 
 #links a:hover span {
