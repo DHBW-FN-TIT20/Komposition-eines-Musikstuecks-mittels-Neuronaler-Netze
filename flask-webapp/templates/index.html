@@ -13,23 +13,24 @@
         <div id="generate" class="flex-column-center bottom-16">
             <h2>Auswahl Präferenzen:</h2>
             <div id="choose-preset" class="flex-column">
-                <div id="choose-model" class="gap-8">
-                    <h3 class="text-center">Model:</h3>
-                    <input type="radio" id="lstm" name="model" value="LSTM" checked>
-                    <label for="lstm">LSTM</label><br>
-                    <input type="radio" id="transformer" name="model" value="Transformer">
-                    <label for="transformer">Transformer</label><br>
-                </div>
-
-                <div id="choose-length" class="gap-8">
-                    <h3 class="text-center">Länge:</h3>
-                    <input type="radio" id="lgth1" name="length" value="5" checked>
-                    <label for="lgth1">5 Takte</label><br>
-                    <input type="radio" id="lgth2" name="length" value="10">
-                    <label for="lgth2">10 Takte</label><br>
-                    <input type="radio" id="lgth3" name="length" value="20">
-                    <label for="lgth3">20 Takte</label><br>
-                </div>
+                {% for s in settings %}
+                    <div id="choose-{{ s.id }}" class="grid-preference">
+                        <h3 class="nowrap-ellipsis">{{ s.name }}:</h3>
+                        <div class="gap-8">
+                            {% for rb in s.radioButtons %}
+                                <div class="nowrap-ellipsis">
+                                    {% if rb.checked %}
+                                        <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}" checked>
+                                    {% else %}
+                                        <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}">
+                                    {% endif %}
+                                    <label for="{{ rb.id }}">{{ rb.label }}</label><br>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
             </div>
             <button id="generate-button">Generierung starten (not implemented)</button>
         </div>
