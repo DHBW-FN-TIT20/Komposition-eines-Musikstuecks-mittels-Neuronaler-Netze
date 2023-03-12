@@ -252,6 +252,10 @@ midi-visualizer svg rect.note.active {
     color: #fff;
 }
 
+#toggleLinks:hover {
+    background: #444;
+}
+
 #toggleLinks:active {
     position: fixed;
     bottom: 23px;
