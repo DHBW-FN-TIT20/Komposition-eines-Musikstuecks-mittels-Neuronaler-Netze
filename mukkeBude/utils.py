@@ -126,10 +126,10 @@ def to_polyphonic_encoding(song: m21.stream.Score, mapping):
     return encodedarr_to_indexencoding(encoded_arr, mapping)
 
 
-def from_polyphonic_encoding(index_arr, mapping, bpm: int = 120) -> m21.stream.Score:
-    encoded_arr = indexarr_to_encodedarr(index_arr, mapping)
+def from_polyphonic_encoding(index_arr, mapping, bpm: int = 120, instrument=m21.instrument.Piano(), validate=True) -> m21.stream.Score:
+    encoded_arr = indexarr_to_encodedarr(index_arr, mapping, validate=validate)
     score_arr = encodedarr_to_scorearr(np.array(encoded_arr))
-    return scorearr_to_song(score_arr, bpm=bpm)
+    return scorearr_to_song(score_arr, bpm=bpm, instrument=instrument)
 
 
 def song_to_scorearr(song: m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SAMPLE_FREQ, max_note_dur=MAX_NOTE_DUR):
@@ -273,23 +273,23 @@ def get_len_encodedarr(encoded_arr):
     return duration + 1
 
 
-def scorearr_to_song(score_arr, sample_freq=SAMPLE_FREQ, bpm=120):
+def scorearr_to_song(score_arr, sample_freq=SAMPLE_FREQ, bpm=120, instrument=m21.instrument.Piano()):
     duration = m21.duration.Duration(1.0 / sample_freq)
     stream = m21.stream.Score()
     stream.append(m21.meter.TimeSignature(TIMESIG))
     stream.append(m21.tempo.MetronomeMark(number=bpm))
     stream.append(m21.key.KeySignature(0))
     for inst in range(score_arr.shape[1]):
-        p = partarr_to_song(score_arr[:, inst, :], duration)
+        p = partarr_to_song(score_arr[:, inst, :], duration, instrument=instrument)
         stream.append(p)
     stream = stream.transpose(0)
     return stream
 
 
-def partarr_to_song(part_arr, duration):
+def partarr_to_song(part_arr, duration, instrument=m21.instrument.Piano()):
     "convert instrument part to music21 chords"
     part = m21.stream.Part()
-    part.append(m21.instrument.Piano())  # TODO hier kann man das Instrument mitgeben
+    part.append(instrument)  # TODO hier kann man das Instrument mitgeben
     part_append_duration_notes(part_arr, duration, part)  # notes already have duration calculated
     return part
 
