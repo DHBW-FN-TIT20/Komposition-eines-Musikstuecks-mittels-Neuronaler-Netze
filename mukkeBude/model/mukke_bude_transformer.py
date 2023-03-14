@@ -11,7 +11,7 @@ BATCH_SIZE = 64
 EMBED_DIM = 256
 FEED_FORWARD_DIM = 256
 NUM_HEADS = 3
-NUM_LAYERS = 2
+NUM_LAYERS = 4
 VOCAB_SIZE = 5000  # Limits parameters in model.
 
 # Inference
@@ -30,7 +30,7 @@ class MukkeBudeTransformer:
         # Token and position embeddings are ways of representing words and their order in a sentence
         embedding_layer = keras_nlp.layers.TokenAndPositionEmbedding(
             vocabulary_size=self.vocabulary_size,
-            sequence_length=128,  # TODO make this dynamic
+            sequence_length=2048,  # TODO make this dynamic
             embedding_dim=EMBED_DIM,  # The output dimension of the embedding layer
             mask_zero=True,
         )
@@ -49,6 +49,7 @@ class MukkeBudeTransformer:
         self.model = keras.Model(inputs=inputs, outputs=outputs)
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         perplexity = keras_nlp.metrics.Perplexity(from_logits=True, mask_token_id=0)
+        accuracy = tf.keras.metrics.Accuracy()
 
         self.model.compile(optimizer="adam", loss=loss_fn, metrics=[perplexity])
 
@@ -75,16 +76,23 @@ class MukkeBudeTransformer:
 
         return self.model.fit(self.train_ds, verbose=2, epochs=epochs)
 
-    def generate(self, input: str, max_length: int = 128) -> str:
+    def generate(self, input: str, max_length: int = 128, probability=0.5) -> str:
         # Unpadded bos token.
-        prompt_tokens = tf.convert_to_tensor([self.tokenizer.token_to_id(input)])
-
+        # TODO consider using a sequence of input (split by ' ' and tokenize every element)
+        prompts = input.split(' ')
+        prompt_ids = []
+        for prompt in prompts:
+            prompt_ids.append(self.tokenizer.token_to_id(prompt))
+        prompt_tokens = tf.convert_to_tensor(prompt_ids)
+        # prompt_tokens = tf.convert_to_tensor([self.tokenizer.token_to_id(input)])
         print(f"prompt_tokens: {prompt_tokens}")
 
-        output_tokens = keras_nlp.utils.greedy_search(
+        output_tokens = keras_nlp.utils.top_p_search(
             self.token_logits_fn,
             prompt_tokens,
             max_length=max_length,
+            p=probability,
+            from_logits=True
         )
         txt = self.tokenizer.detokenize(output_tokens)
         return txt
