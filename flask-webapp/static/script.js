@@ -1,9 +1,5 @@
 const links = document.getElementById('links');
 const linkButton = document.getElementById('toggleLinks');
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('example') == true || urlParams.get('example') == 'true') {
-    document.getElementById('abc-file-location').innerHTML = 'Beispiel:';
-}
 
 let abcString = '';
 let xmlhttp = new XMLHttpRequest();
@@ -23,17 +19,17 @@ abcString = abcString.split(/\r?\n/) // Split input text into an array of lines
 
 let visualOptions = {
     format: {
-        titlefont: 'Inconsolata 24',
-        subtitlefont: 'Inconsolata',
-        composerfont: 'Inconsolata',
-        partsfont: 'Inconsolata',
-        tempofont: 'Inconsolata',
-        gchordfont: 'Inconsolata',
-        annotationfont: 'Inconsolata',
-        infofont: 'Inconsolata',
-        textfont: 'Inconsolata',
-        vocalfont: 'Inconsolata',
-        wordsfont: 'Inconsolata'
+        titlefont: 'Inconsolata bold 24',
+        subtitlefont: 'Inconsolata bold',
+        composerfont: 'Inconsolata bold',
+        partsfont: 'Inconsolata bold',
+        tempofont: 'Inconsolata bold',
+        gchordfont: 'Inconsolata bold',
+        annotationfont: 'Inconsolata bold',
+        infofont: 'Inconsolata bold',
+        textfont: 'Inconsolata bold',
+        vocalfont: 'Inconsolata bold',
+        wordsfont: 'Inconsolata bold'
     },
     // responsive: 'resize',
     staffwidth: 740,

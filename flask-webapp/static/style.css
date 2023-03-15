@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
 * {
     margin: 0;
     padding: 0;
+    font-family: 'Inconsolata', sans-serif;
 }
 
 html {
@@ -12,18 +13,22 @@ html {
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'Inconsolata', sans-serif;
+    font-weight: bold;
     display: grid;
     grid-template-columns: 400px 5px calc(100% - 405px);
     height: 100%;
 }
 
 button {
-    padding: 4px;
+    padding: 8px 10px;
     cursor: pointer;
     background: #fff;
-    border: solid 1px #fff;
-    border-radius: 10px;
+    border: solid 2px #000;
+    border-radius: 5px;
+}
+
+button:hover {
+    border: solid 2px #fff;
 }
 
 button:active {
@@ -51,6 +56,22 @@ button:active {
     width: fit-content;
 }
 
+#song-header {
+    position: relative;
+    text-align: center;
+}
+
+#download-current-midi {
+    width: 192px;
+    position: absolute;
+    left: 0;
+}
+
+#download-current-midi a {
+    color: #000;
+    text-decoration: none;
+}
+
 /* Classes */
 .center {
     display: flex;
@@ -58,8 +79,14 @@ button:active {
     margin-right: auto;
 }
 
-.text-center {
-    text-align: center;
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.h-34 {
+    height: 34px;
 }
 
 .max-100 {
@@ -259,6 +286,7 @@ midi-visualizer svg rect.note.active {
     padding: 0;
     background: #000;
     color: #fff;
+    border-radius: 10px;
 }
 
 #toggleLinks:hover {
