@@ -10,34 +10,38 @@
 
 <body>
     <div id="sideboard" class="flex-column" style="gap: 0;">
-        <div id="generate" class="flex-column-center pad-16">
-            <h2 class="bottom-16">Generierung:</h2>
-            <div id="choose-preset" class="flex-column">
-                {% for s in settings %}
-                    <div id="choose-{{ s.id }}" class="grid-preference">
-                        <h3 class="nowrap-ellipsis text-right">{{ s.name }}:</h3>
-                        <div class="gap-8">
-                            {% for rb in s.radioButtons %}
+        {% if settings %}
+            <div id="generate" class="flex-column-center pad-16">
+                <h2 class="bottom-16">Generierung:</h2>
+                <div id="choose-preset" class="flex-column">
+                    {% for s in settings %}
+                        <div id="choose-{{ s.id }}" class="grid-preference">
+                            <h3 class="nowrap-ellipsis text-right">{{ s.name }}:</h3>
+                            <div class="gap-8">
+                                {% for rb in s.radioButtons %}
                                 <div class="nowrap-ellipsis pointer-childs">
                                     <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
                                     <label for="{{ rb.id }}">{{ rb.label }}</label><br>
                                 </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
-                <button id="generate-button" class="center bottom-8">Generierung starten (not implemented)</button>
+                    {% endfor %}
+                    <button id="generate-button" class="center bottom-8">Generierung starten (TODO)</button>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         <hr class="hide-at-770h" style="height: 5px; min-height: 5px; background: #fff; border: 0;">
 
-        <div id="choose-example" class="flex-column-center pad-16 hide-at-770h">
-            <h2>Beispiele:</h2>
-            {% for ex in exampleFiles %}
-                <button class="bt-center" onclick="window.location.href='/{{ ex|e }}?example=true';">{{ ex|e }}.mid</button>
-            {% endfor %}
-        </div>
+        {% if exampleFiles %}
+            <div id="choose-example" class="flex-column-center pad-16 hide-at-770h">
+                <h2>Beispiele:</h2>
+                {% for ex in exampleFiles %}
+                <button class="bt-center" onclick="window.location.href='/examples/{{ ex|e }}';">{{ ex|e }}.mid</button>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 
     <div style="background: #fff;"></div>
@@ -49,8 +53,13 @@
                 {% set header = 'Generierter Song:' %}
                 {% set downloadable = True %}
             {% else %}
-                {% set midi = 'Zelda' %}
-                {% set header = 'Beispiel' %}
+                {% if midiExample %}
+                    {% set midi = 'examples/' + midiExample %}
+                    {% set header = 'Beispiel: ' + midiExample %}
+                {% else %}
+                    {% set midi = 'examples/' + placeholder %}
+                    {% set header = 'Beispiel: ' + placeholder %}
+                {% endif %}
             {% endif %}
             <div id="song-header" class="bottom-16 min-790">
                 {% if downloadable %}<button id="download-current-midi" class="h-34"><a href="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" target="_blank">Diesen Song herunterladen</a></button>{% endif %}
