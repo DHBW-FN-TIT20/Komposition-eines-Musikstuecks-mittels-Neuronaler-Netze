@@ -91,5 +91,41 @@ settings = [
                 'checked': False
             }
         ]
+    },
+    {
+        'id': 'instrument',
+        'name': 'Instrument',
+        'radioButtons': [
+            {
+                'id': 'piano',
+                'value': 'Piano',
+                'label': 'Piano',
+                'checked': True
+            },
+            {
+                'id': 'guitar',
+                'value': 'Gitarre',
+                'label': 'Gitarre',
+                'checked': False
+            }
+        ]
+    },
+    {
+        'id': 'bpm',
+        'name': 'BPM',
+        'radioButtons': [
+            {
+                'id': '90',
+                'value': '90',
+                'label': '90',
+                'checked': True
+            },
+            {
+                'id': '120',
+                'value': '120',
+                'label': '120',
+                'checked': False
+            }
+        ]
     }
 ]
