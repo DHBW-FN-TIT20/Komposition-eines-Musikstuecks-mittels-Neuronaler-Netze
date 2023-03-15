@@ -125,6 +125,15 @@ button:active {
     gap: 16px;
 }
 
+.pointer-childs {
+    width: fit-content;
+    cursor: pointer;
+}
+
+.pointer-childs * {
+    cursor: pointer;
+}
+
 /* MIDI Player */
 midi-player {
     display: block;

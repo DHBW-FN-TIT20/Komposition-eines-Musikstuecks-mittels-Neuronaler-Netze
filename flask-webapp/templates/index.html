@@ -18,12 +18,8 @@
                         <h3 class="nowrap-ellipsis text-right">{{ s.name }}:</h3>
                         <div class="gap-8">
                             {% for rb in s.radioButtons %}
-                                <div class="nowrap-ellipsis">
-                                    {% if rb.checked %}
-                                        <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}" checked>
-                                    {% else %}
-                                        <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}">
-                                    {% endif %}
+                                <div class="nowrap-ellipsis pointer-childs">
+                                    <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
                                     <label for="{{ rb.id }}">{{ rb.label }}</label><br>
                                 </div>
                             {% endfor %}
@@ -49,18 +45,16 @@
     <div id="main" class="pad-16">
         <div class="max-100">
             {% if midi %}
-                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">Generierter Sound:</h2>
-                <div class="min-790">
-                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
-                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid"></midi-visualizer>
-                </div>
+                {% set header = 'Generierter Song' %}
             {% else %}
-                <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc') }}/Zelda.abc">Beispiel:</h2>
-                <div class="min-790">
-                    <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/Zelda.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
-                    <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/Zelda.mid"></midi-visualizer>
-                </div>
+                {% set midi = 'Zelda' %}
+                {% set header = 'Beispiel' %}
             {% endif %}
+            <h2 id="abc-file-location" class="text-center bottom-16" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">{{ header }}:</h2>
+            <div class="min-790">
+                <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid"></midi-visualizer>
+            </div>
             <div id="abcjs" class="center bottom-16"></div>
         </div>
     </div>
