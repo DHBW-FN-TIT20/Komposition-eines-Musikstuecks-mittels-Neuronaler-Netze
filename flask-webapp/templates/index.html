@@ -12,14 +12,14 @@
     <div id="sideboard" class="flex-column" style="gap: 0;">
         {% if settings %}
             <div id="generate" class="flex-column-center pad-16">
-                <h2 class="bottom-16">Generierung:</h2>
+                <h2 class="bottom-16 cursor-default">Generierung:</h2>
                 <div id="choose-preset" class="flex-column">
                     {% for s in settings %}
                         <div id="choose-{{ s.id }}" class="grid-preference">
-                            <h3 class="nowrap-ellipsis text-right">{{ s.name }}:</h3>
+                            <h3 class="nowrap-ellipsis text-right cursor-default">{{ s.name }}:</h3>
                             <div class="gap-8">
                                 {% for rb in s.radioButtons %}
-                                <div class="nowrap-ellipsis pointer-childs">
+                                <div class="nowrap-ellipsis cursor-pointer-childs cursor-default">
                                     <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
                                     <label for="{{ rb.id }}">{{ rb.label }}</label><br>
                                 </div>
@@ -32,16 +32,15 @@
             </div>
         {% endif %}
 
+        <!-- {% if exampleFiles %}
         <hr class="hide-at-770h" style="height: 5px; min-height: 5px; background: #fff; border: 0;">
-
-        {% if exampleFiles %}
             <div id="choose-example" class="flex-column-center pad-16 hide-at-770h">
                 <h2>Beispiele:</h2>
                 {% for ex in exampleFiles %}
                 <button class="bt-center" onclick="window.location.href='/examples/{{ ex|e }}';">{{ ex|e }}.mid</button>
                 {% endfor %}
             </div>
-        {% endif %}
+        {% endif %} -->
     </div>
 
     <div style="background: #fff;"></div>
@@ -73,7 +72,20 @@
         </div>
     </div>
 
-    <div id="links" class="hidden">
+    <div id="help" class="modal" isHidden="True">
+        <div class="grid-links bottom-32">
+            <a href="/examples/generated_song_p0_8_withSeed">
+                <img src="{{ url_for('static', filename='img') }}/bach.png">
+                <span>Beispiel - Bach</span>
+            </a>
+            <a href="/examples/generated_song_pokemon">
+                <img src="{{ url_for('static', filename='img') }}/controller.png">
+                <span>Beispiel - Videospiele</span>
+            </a>
+        </div>
+    </div>
+    <button id="toggleHelp" class="modal-button" onclick="toggleHelp()">?</button>
+    <div id="links" class="modal" isHidden="True">
         <div class="grid-links bottom-32">
             <a href="https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
                 <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
@@ -85,7 +97,7 @@
             </a>
         </div>
     </div>
-    <button id="toggleLinks" onclick="toggleLinks()">i</button>
+    <button id="toggleInfo" class="modal-button" onclick="toggleInfo()">i</button>
 </body>
 
 <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>

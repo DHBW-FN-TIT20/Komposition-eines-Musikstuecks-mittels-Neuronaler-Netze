@@ -1,5 +1,7 @@
 const links = document.getElementById('links');
-const linkButton = document.getElementById('toggleLinks');
+const infoButton = document.getElementById('toggleInfo');
+const help = document.getElementById('help');
+const helpButton = document.getElementById('toggleHelp');
 
 let abcString = '';
 let xmlhttp = new XMLHttpRequest();
@@ -41,12 +43,26 @@ let visualOptions = {
 };
 window.ABCJS.renderAbc('abcjs', abcString, visualOptions);
 
-let toggleLinks = () => {
-    if (links.className == 'hidden') {
-        links.className = 'visible';
-        linkButton.innerHTML = 'X';
+let toggleInfo = () => {
+    if (links.getAttribute('isHidden') == 'True') {
+        links.setAttribute('isHidden', 'False');
+        infoButton.innerHTML = 'x';
+        help.setAttribute('isHidden', 'True');
+        helpButton.innerHTML = '?';
     } else {
-        links.className = 'hidden';
-        linkButton.innerHTML = 'i';
+        links.setAttribute('isHidden', 'True');
+        infoButton.innerHTML = 'i';
+    }
+}
+
+let toggleHelp = () => {
+    if (help.getAttribute('isHidden') == 'True') {
+        help.setAttribute('isHidden', 'False');
+        helpButton.innerHTML = 'x';
+        links.setAttribute('isHidden', 'True');
+        infoButton.innerHTML = 'i';
+    } else {
+        help.setAttribute('isHidden', 'True');
+        helpButton.innerHTML = '?';
     }
 }
