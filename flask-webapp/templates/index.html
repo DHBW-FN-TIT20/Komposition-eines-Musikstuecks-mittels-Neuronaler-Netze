@@ -10,37 +10,25 @@
 
 <body>
     <div id="sideboard" class="flex-column" style="gap: 0;">
-        {% if settings %}
-            <div id="generate" class="flex-column-center pad-16">
-                <h2 class="bottom-16 cursor-default">Generierung:</h2>
-                <div id="choose-preset" class="flex-column">
-                    {% for s in settings %}
-                        <div id="choose-{{ s.id }}" class="grid-preference">
-                            <h3 class="nowrap-ellipsis text-right cursor-default">{{ s.name }}:</h3>
-                            <div class="gap-8">
-                                {% for rb in s.radioButtons %}
-                                <div class="nowrap-ellipsis cursor-pointer-childs cursor-default">
-                                    <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
-                                    <label for="{{ rb.id }}">{{ rb.label }}</label><br>
-                                </div>
-                                {% endfor %}
+        <div id="generate" class="flex-column-center pad-16">
+            <h2 class="bottom-16 cursor-default">Generierung:</h2>
+            <div id="choose-preset" class="flex-column">
+                {% for s in settings %}
+                    <div id="choose-{{ s.id }}" class="grid-preference">
+                        <h3 class="nowrap-ellipsis text-right cursor-default">{{ s.name }}:</h3>
+                        <div class="gap-8">
+                            {% for rb in s.radioButtons %}
+                            <div class="nowrap-ellipsis cursor-pointer-childs cursor-default">
+                                <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
+                                <label for="{{ rb.id }}">{{ rb.label }}</label><br>
                             </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                    <button id="generate-button" class="center bottom-8">Generierung starten (TODO)</button>
-                </div>
-            </div>
-        {% endif %}
-
-        <!-- {% if exampleFiles %}
-        <hr class="hide-at-770h" style="height: 5px; min-height: 5px; background: #fff; border: 0;">
-            <div id="choose-example" class="flex-column-center pad-16 hide-at-770h">
-                <h2>Beispiele:</h2>
-                {% for ex in exampleFiles %}
-                <button class="bt-center" onclick="window.location.href='/examples/{{ ex|e }}';">{{ ex|e }}.mid</button>
+                    </div>
                 {% endfor %}
+                <button id="generate-button" class="center bottom-8" onclick="generate_new_song()">Generierung starten (TODO)</button>
             </div>
-        {% endif %} -->
+        </div>
     </div>
 
     <div style="background: #fff;"></div>
@@ -61,7 +49,9 @@
                 {% endif %}
             {% endif %}
             <div id="song-header" class="bottom-16 min-790">
-                {% if downloadable %}<button id="download-current-midi" class="h-34"><a href="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" target="_blank">Diesen Song herunterladen</a></button>{% endif %}
+                {% if downloadable %}
+                    <button id="download-current-midi" class="h-34"><a href="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" target="_blank">Diesen Song herunterladen</a></button>
+                {% endif %}
                 <h2 id="abc-file-location" class="flex-center h-34" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">{{ header }}</h2>
             </div>
             <div class="min-790">
@@ -77,6 +67,10 @@
             <a href="/examples/generated_song_p0_8_withSeed">
                 <img src="{{ url_for('static', filename='img') }}/bach.png">
                 <span>Beispiel - Bach</span>
+            </a>
+            <a href="/examples/DonkeyKong">
+                <img src="{{ url_for('static', filename='img') }}/guitar.png">
+                <span>Beispiel - Pink Floyd</span>
             </a>
             <a href="/examples/generated_song_pokemon">
                 <img src="{{ url_for('static', filename='img') }}/controller.png">
@@ -98,9 +92,12 @@
         </div>
     </div>
     <button id="toggleInfo" class="modal-button" onclick="toggleInfo()">i</button>
+
+    <div id="loading-screen" style="display: none;"></div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+<script src="{{ url_for('static', filename='jquery-3.6.4.min.js') }}"></script>
 <script src="{{ url_for('static', filename='abcjs.min.js') }}"></script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </html>

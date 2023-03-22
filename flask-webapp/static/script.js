@@ -66,3 +66,34 @@ let toggleHelp = () => {
         helpButton.innerHTML = '?';
     }
 }
+
+let generate_new_song = () => {
+    document.getElementById('generate-button').disabled = true;
+    let params = {
+        model: $("input[type='radio'][name='model']:checked").val(),
+        length: $("input[type='radio'][name='length']:checked").val(),
+        music: $("input[type='radio'][name='music']:checked").val(),
+        coding: $("input[type='radio'][name='coding']:checked").val(),
+        instrument: $("input[type='radio'][name='instrument']:checked").val(),
+        bpm: $("input[type='radio'][name='bpm']:checked").val()
+    };
+
+    let url = '/';
+    let data = '';
+    $.get({
+        url: '/generate',
+        data: params,
+        success: d => {
+            data = d;
+        },
+        dataType: "text"
+    }).done(() => {
+        console.log(`Data from /generate: ${data}`);
+        url += data;
+    }).fail(() => {
+        url += '';
+        // alert('Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webseiten-Administrator.');
+    }).always(() => {
+        document.location.href = url;
+    });
+}

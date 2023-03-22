@@ -36,6 +36,14 @@ button:active {
     top: 1px;
 }
 
+button:disabled,
+button[disabled]{
+    background-color: #aaa;
+    border: solid 2px #000;
+    position: static;
+    cursor: default;
+}
+
 /* IDs */
 #main {
     justify-content: center;
