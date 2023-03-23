@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
 :root {
-    --sideboard-width: 400px;
+    --sideboard-width: 420px;
 }
 
 * {
@@ -64,8 +64,17 @@ input[type=radio][disabled] ~ label {
 }
 
 #sideboard {
-    justify-content: space-evenly;
     overflow: auto;
+    display: grid;
+    grid-template-rows: 160px 5px auto;
+}
+
+#mukkebude-logo {
+    width: 256px;
+}
+
+#generate {
+    max-width: calc(var(--sideboard-width) - 52px);
 }
 
 #abcjs {
@@ -175,6 +184,7 @@ input[type=radio][disabled] ~ label {
 .flex-column-center {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: 16px;
 }
@@ -189,6 +199,11 @@ input[type=radio][disabled] ~ label {
     display: grid;
     grid-template-columns: auto;
     gap: 16px;
+}
+
+.self-center {
+    justify-self: center;
+    align-self: center;
 }
 
 .cursor-default {
@@ -380,15 +395,9 @@ midi-visualizer svg rect.note.active {
 }
 
 /* Responsive Design */
-@media only screen and (max-height: 770px) {
-    .hide-at-770h {
-        display: none;
-    }
-}
-
 @media only screen and (max-width: 1300px) {
     :root {
-        --sideboard-width: 300px;
+        --sideboard-width: 320px;
     }
 }
 

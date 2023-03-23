@@ -9,8 +9,14 @@
 </head>
 
 <body>
-    <div id="sideboard" class="flex-column" style="gap: 0;">
-        <div id="generate" class="flex-column-center pad-16">
+    <div id="sideboard" style="gap: 0;">
+        <a href="/" class="self-center">
+            <img src="{{ url_for('static', filename='img') }}/mukkebude.png" id="mukkebude-logo">
+        </a>
+
+        <div style="background: #fff;"></div>
+
+        <div id="generate" class="flex-column-center pad-16 self-center">
             <h2 class="bottom-16 cursor-default">Generierung:</h2>
             <div id="choose-preset" class="flex-column">
                 {% for s in settings %}
@@ -62,7 +68,7 @@
         </div>
 
         <div id="loading-screen">
-            <img src="{{ url_for('static', filename='img') }}/loading.png" class="rotate" />
+            <img src="{{ url_for('static', filename='img') }}/loading.png" class="rotate">
             <p>Song wird generiert...</p>
         </div>
     </div>
