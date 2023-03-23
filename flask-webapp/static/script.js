@@ -2,6 +2,8 @@ const links = $('#links');
 const infoButton = $('#toggleInfo');
 const help = $('#help');
 const helpButton = $('#toggleHelp');
+const body = $('body');
+const sideboardButton = $('#toggle-sideboard');
 
 let abcString = '';
 let xmlhttp = new XMLHttpRequest();
@@ -64,6 +66,17 @@ let toggleHelp = () => {
     } else {
         help.attr('isHidden', 'True');
         helpButton.html('?');
+    }
+}
+
+let toggleSideboard = () => {
+    console.log(body.css('grid-template-columns'));
+    if (body.css('grid-template-columns').startsWith('0px')) {
+        body.css('grid-template-columns', 'var(--sideboard-width) 5px calc(100% - 5px - var(--sideboard-width))');
+        sideboardButton.html('&#706; close');
+    } else {
+        body.css('grid-template-columns', '0 5px calc(100% - 5px)');
+        sideboardButton.html('open &#707;');
     }
 }
 
