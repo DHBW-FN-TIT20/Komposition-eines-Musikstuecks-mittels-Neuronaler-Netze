@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
+:root {
+    --sideboard-width: 400px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -15,7 +19,7 @@ body {
     color: #fff;
     font-weight: bold;
     display: grid;
-    grid-template-columns: 400px 5px calc(100% - 405px);
+    grid-template-columns: var(--sideboard-width) 5px calc(100% - 5px - var(--sideboard-width));
     height: 100%;
 }
 
@@ -177,7 +181,7 @@ input[type=radio][disabled] ~ label {
 
 .grid-preference {
     display: grid;
-    grid-template-columns: 150px 202px;
+    grid-template-columns: calc((var(--sideboard-width) - 48px) / 2 - 26px) calc((var(--sideboard-width) - 48px) / 2 + 26px);
     gap: 16px;
 }
 
@@ -383,12 +387,8 @@ midi-visualizer svg rect.note.active {
 }
 
 @media only screen and (max-width: 1300px) {
-    body {
-        grid-template-columns: 300px 5px calc(100% - 305px);
-    }
-
-    .grid-preference {
-        grid-template-columns: 100px 152px;
+    :root {
+        --sideboard-width: 300px;
     }
 }
 
