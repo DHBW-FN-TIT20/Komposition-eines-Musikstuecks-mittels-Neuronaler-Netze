@@ -60,6 +60,11 @@
             </div>
             <div id="abcjs" class="center bottom-16"></div>
         </div>
+
+        <div id="loading-screen">
+            <img src="{{ url_for('static', filename='img') }}/loading.png" class="rotate" />
+            <p>Song wird generiert...</p>
+        </div>
     </div>
 
     <div id="help" class="modal" isHidden="True">
@@ -92,8 +97,6 @@
         </div>
     </div>
     <button id="toggleInfo" class="modal-button" onclick="toggleInfo()">i</button>
-
-    <div id="loading-screen" style="display: none;"></div>
 </body>
 
 <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>

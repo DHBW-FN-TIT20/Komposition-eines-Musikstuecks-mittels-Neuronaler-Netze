@@ -68,7 +68,18 @@ let toggleHelp = () => {
 }
 
 let generate_new_song = () => {
-    document.getElementById('generate-button').disabled = true;
+    const main = $('#main');
+    const loadingScreen = $('#loading-screen');
+    const generateButton = $('#generate-button');
+    $('#generate input[type=radio]').each(function() {
+        $(this).prop('disabled', true);
+    });
+
+    main.scrollTop = 0;
+    main.css('overflow', 'hidden');
+    loadingScreen.css('display', 'flex');
+    generateButton.prop('disabled', true);
+
     let params = {
         model: $("input[type='radio'][name='model']:checked").val(),
         length: $("input[type='radio'][name='length']:checked").val(),
