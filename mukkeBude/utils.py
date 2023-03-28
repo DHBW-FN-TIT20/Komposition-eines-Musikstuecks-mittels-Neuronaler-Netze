@@ -18,6 +18,7 @@ SAMPLE_FREQ = 4
 NOTE_SIZE = 128
 DUR_SIZE = (10 * BPB * SAMPLE_FREQ) + 1  # Max length - 8 bars. Or 16 beats/quarternotes
 MAX_NOTE_DUR = 8 * BPB * SAMPLE_FREQ
+ACCAPTABLE_DURATIONS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0]
 
 SEQType = Enum("SEQType", "Mask, Sentence, Melody, Chords, Empty")
 
@@ -120,13 +121,165 @@ def read_all(folder_path: str) -> List[Union[m21.stream.Score, m21.stream.Part, 
     return songs
 
 
+def transpose_songs(songs: list[m21.stream.Score]) -> list[m21.stream.Score]:
+    """Transpose songs to c major or a minor
+
+    :param songs: list of songs
+    :return: list of transposed songs
+    """
+    transposed_songs = []
+
+    for song in songs:
+        parts = song.getElementsByClass(m21.stream.Part)
+        measures_part0 = parts[0].getElementsByClass(m21.stream.Measure)
+        try:
+            key = measures_part0[0][4]  # There is the key signature of the most songs in THIS dataset
+        except IndexError:
+            key = None
+
+        # If no key siganture is found, we use music21's key guessing algorithm
+        if not isinstance(key, m21.key.Key):
+            key = song.analyze("key")
+
+        # get interval for transposition
+        if key.mode == "major":
+            # Interval between tonic and C
+            interval = m21.interval.Interval(key.tonic, m21.pitch.Pitch("C"))
+        elif key.mode == "minor":
+            # Interval between tonic and A
+            interval = m21.interval.Interval(key.tonic, m21.pitch.Pitch("A"))
+
+        # transpose song to C major or A minor
+        transposed_song = song.transpose(interval)
+        transposed_songs.append(transposed_song)
+
+    return transposed_songs
+
+
+def encode_songs_old(songs: list[m21.stream.Score]) -> list[list[str]]:
+    """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
+
+    :param songs: list of songs
+    :return: list of encoded songs
+    """
+    encoded_songs = []
+    for song in songs:
+        # Every time step is a quarter note
+        time_step = 0.25
+
+        encoded_song = []
+
+        # Save the song in MIDI format
+        # A event is a note or a rest
+        for event in song.flat.notesAndRests:
+            # Notes
+            if isinstance(event, m21.note.Note):
+                symbol = "n" + str(event.pitch.midi)
+            # Rests
+            elif isinstance(event, m21.note.Rest):
+                symbol = "r"
+
+            # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
+            # The note itself and 3 "_" symbols
+            steps = int(event.duration.quarterLength / time_step)
+            for step in range(steps):
+                if step == 0:
+                    encoded_song.append(symbol)
+                else:
+                    encoded_song.append("_")
+
+        # cast the encoded song to string
+        encoded_songs.append(encoded_song)
+
+    return encoded_songs
+
+
+def decode_songs_old(song: list[str]) -> m21.stream.Stream:
+    # Remove the "n" symbol from the notes
+    song = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song]
+
+    m21_stream: m21.stream.Stream = m21.stream.Stream()
+    start_symbol = None
+    step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
+    step_duration = 0.25  # The duration of one step in quarter length
+
+    for index, symbol in enumerate(song):
+        # If the symbol is a note or a rest or the end of the melody
+        if symbol != "_" or index == len(song) - 1:
+            # Ensure that the symbol is not the start symbol
+            if start_symbol is not None:
+                quarter_length_duration = step_duration * step_counter  # 0.25 * 1 = 0.25, 0.25 * 2 = 0.5, 0.25 * 4 = 1
+
+                # If the symbol is a note
+                if start_symbol != "r":
+                    m21_event = m21.note.Note(int(start_symbol), quarterLength=quarter_length_duration)
+
+                # If the symbol is a rest
+                else:
+                    m21_event = m21.note.Rest(quarterLength=quarter_length_duration)
+
+                m21_stream.append(m21_event)
+                step_counter = 1
+
+            start_symbol = symbol
+
+        else:
+            step_counter += 1
+
+    return m21_stream
+
+
+def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int) -> list[list[str]]:
+    songs: list[m21.stream.Score] = []
+
+    for path in paths:
+        songs.append(read_single_from_corpus(path))  # type: ignore
+
+    # Filter out songs with bad durations
+    bad_songs = []
+
+    for index, song in enumerate(songs):
+        for note in song.flat.notesAndRests:
+            if note.duration.quarterLength not in ACCAPTABLE_DURATIONS:
+                bad_songs.append(index)
+                break
+
+    # Remove bad songs
+    for index in sorted(bad_songs, reverse=True):
+        del songs[index]
+
+    print(f"Removed {len(bad_songs)} bad songs")
+    print(f"Remaining songs: {len(songs)}")
+
+    # transpose songs to C major
+    songs = transpose_songs(songs)
+
+    # Encode the songs
+    encoded_songs = encode_songs_old(songs)
+
+    # Create the dataset
+    song_delimiters = "/ " * sequence_length
+    dataset: list[list[str]] = []
+    for song in encoded_songs:  # type: ignore
+        dataset.append(song_delimiters)  # type: ignore
+        dataset.append(song)  # type: ignore
+
+    return dataset
+
+
 def to_polyphonic_encoding(song: m21.stream.Score, mapping):
     score_arr = song_to_scorearr(song)
     encoded_arr = scorearr_to_encodedarr(score_arr)
     return encodedarr_to_indexencoding(encoded_arr, mapping)
 
 
-def from_polyphonic_encoding(index_arr, mapping, bpm: int = 120, instrument=m21.instrument.Piano(), validate=True) -> m21.stream.Score:
+def from_polyphonic_encoding(
+    index_arr,
+    mapping,
+    bpm: int = 120,
+    instrument=m21.instrument.Piano(),
+    validate=True,
+) -> m21.stream.Score:
     encoded_arr = indexarr_to_encodedarr(index_arr, mapping, validate=validate)
     score_arr = encodedarr_to_scorearr(np.array(encoded_arr))
     return scorearr_to_song(score_arr, bpm=bpm, instrument=instrument)

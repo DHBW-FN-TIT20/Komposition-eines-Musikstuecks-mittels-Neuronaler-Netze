@@ -8,7 +8,12 @@ EOS = "xxeos"
 
 SEP = "xxsep"  # Used to denote end of timestep (required for polyphony). separator idx = -1 (part of notes)
 
-SPECIAL_TOKS = [BOS, PAD, EOS, SEP]  # Important: SEP token must be last
+WAIT_LSTM = "_"
+SEP_LSTM = "/"
+REST = "r"
+SPACE = " "
+
+SPECIAL_TOKS = [BOS, PAD, EOS, SEP, WAIT_LSTM, SEP_LSTM, SPACE, REST]  # Important: SEP token must be last
 
 NOTE_TOKS = [f"n{i}" for i in range(NOTE_SIZE)]  # type: ignore
 DUR_TOKS = [f"d{i}" for i in range(DUR_SIZE)]  # type: ignore
