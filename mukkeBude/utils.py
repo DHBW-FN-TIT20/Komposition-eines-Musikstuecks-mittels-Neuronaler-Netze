@@ -3,6 +3,7 @@ import os
 from enum import Enum
 from itertools import groupby
 from pathlib import Path
+from typing import Any
 from typing import List
 from typing import Union
 
@@ -229,7 +230,7 @@ def decode_songs_old(song: list[str]) -> m21.stream.Stream:
     return m21_stream
 
 
-def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int) -> list[list[str]]:
+def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int, mapping: Any) -> list[int]:
     songs: list[m21.stream.Score] = []
 
     for path in paths:
@@ -259,10 +260,10 @@ def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int) -> list[li
 
     # Create the dataset
     song_delimiters = "/ " * sequence_length
-    dataset: list[list[str]] = []
+    dataset: list[int] = []
     for song in encoded_songs:  # type: ignore
-        dataset.append(song_delimiters)  # type: ignore
-        dataset.append(song)  # type: ignore
+        dataset.extend(mapping.numericalize(song_delimiters))
+        dataset.extend(mapping.numericalize(song))
 
     return dataset
 

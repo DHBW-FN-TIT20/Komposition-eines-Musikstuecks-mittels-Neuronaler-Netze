@@ -50,10 +50,10 @@ class MukkeBudeLSTM:
         self.model = keras.Model(input_layer, output_layer)
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=["accuracy"])
 
-    def train(self, dataset: list[list[str]], epochs: int = 50, batch_size: int = 64) -> None:
+    def train(self, dataset: list[int], epochs: int = 50, batch_size: int = 64) -> None:
         """Train the LSTM model
 
-        :param path: Path to the training data
+        :param dataset: Training dataset
         :param epochs: Number of epochs to train, defaults to 10
         :param batch_size: Size of the batches, defaults to 64
         """
@@ -122,17 +122,12 @@ class MukkeBudeLSTM:
 
         return output_melody
 
-    def __create_training_data(self, dataset: list[list[str]]) -> tuple[Any, np.ndarray]:
+    def __create_training_data(self, integer_sequence: list[int]) -> tuple[Any, np.ndarray]:
         """Create the training data
 
-        :param path: Path to the training data
+        :param integer_sequence: training data as integer sequence
         :return: Training data
         """
-        # Convert to one long integer sequence
-        integer_sequence = []
-        for song in dataset:
-            song_integers = self.mapping.numericalize(song)
-            integer_sequence.extend(song_integers)
 
         # Create the training data
         num_sequences = len(integer_sequence) - self.sequence_length
