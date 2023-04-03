@@ -17,7 +17,7 @@ VOCAB_SIZE = 5000  # Limits parameters in model.
 # Inference
 NUM_TOKENS_TO_GENERATE = 80
 
-
+#TODO add load and save trained model, add output of diagrams during training (for documentation)
 class MukkeBudeTransformer:
     def __init__(self, mapping):
         self.mapping = mapping
