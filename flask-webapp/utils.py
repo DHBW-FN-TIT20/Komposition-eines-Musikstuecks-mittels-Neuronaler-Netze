@@ -33,19 +33,19 @@ settings = [
             {
                 'id': 'lgth1',
                 'value': '5',
-                'label': '5 Takte',
+                'label': 'max. 5 Takte',
                 'checked': True
             },
             {
                 'id': 'lgth2',
                 'value': '10',
-                'label': '10 Takte',
+                'label': 'max. 10 Takte',
                 'checked': False
             },
             {
                 'id': 'lgth3',
                 'value': '20',
-                'label': '20 Takte',
+                'label': 'max. 20 Takte',
                 'checked': False
             }
         ]
