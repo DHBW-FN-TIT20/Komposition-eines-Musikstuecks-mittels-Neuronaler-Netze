@@ -135,3 +135,14 @@ dmypy.json
 
 # Train data
 *raw_train*
+
+# Add some more Data
+.vs
+.vscode
+mukkeBude/runs
+mukkeBude/data.json
+*.midi
+*.musicxml
+
+# Exclude Folder with example music data
+!mukkeBude/songs
