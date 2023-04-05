@@ -231,6 +231,13 @@ def decode_songs_old(song: list[str]) -> m21.stream.Stream:
 
 
 def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int, mapping: Any) -> list[int]:
+    """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
+
+    :param paths: Path to the songs
+    :param sequence_length: length of the sequences
+    :param mapping: the mapping of the dataset
+    :return: Decoded songs in a list
+    """
     songs: list[m21.stream.Score] = []
 
     for path in paths:

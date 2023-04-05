@@ -13,7 +13,7 @@ SEP_LSTM = "/"
 REST = "r"
 SPACE = " "
 
-SPECIAL_TOKS = [BOS, PAD, EOS, SEP, WAIT_LSTM, SEP_LSTM, SPACE, REST]  # Important: SEP token must be last
+SPECIAL_TOKS = [BOS, PAD, EOS, WAIT_LSTM, SEP_LSTM, SPACE, REST, SEP]  # Important: SEP token must be last
 
 NOTE_TOKS = [f"n{i}" for i in range(NOTE_SIZE)]  # type: ignore
 DUR_TOKS = [f"d{i}" for i in range(DUR_SIZE)]  # type: ignore
