@@ -1,4 +1,7 @@
+import os
 from typing import Any
+from typing import List
+from typing import Tuple
 
 import keras
 import numpy as np
@@ -9,11 +12,12 @@ class MukkeBudeLSTM:
     def __init__(
         self,
         mapping: MusicMapping,
-        hidden_layer: list[int] = [256],
+        hidden_layer: List[int] = [256],
         loss="sparse_categorical_crossentropy",
         activation="softmax",
         optimizer=keras.optimizers.Adam(learning_rate=0.001),
         sequence_length: int = 64,
+        model: keras.Model = None,
     ) -> None:
         """LSTM model for MukkeBude
 
@@ -23,8 +27,14 @@ class MukkeBudeLSTM:
         :param activation: Activation function of the LSTM, defaults to "softmax"
         :param optimizer: optemizer of the LSTM, defaults to keras.optimizers.Adam(learning_rate= 0.001)
         :param sequence_length: Length of the sequences, defaults to 64
+        :param model: Pretrained model, defaults to None. If a model is provided, the other parameters are ignored
         """
         self.mapping = mapping
+
+        if model is not None:
+            self.model = model
+            return
+
         self.output_layer_size = len(mapping)
         self.hidden_layer_sizes = hidden_layer
         self.loss = loss
@@ -50,7 +60,7 @@ class MukkeBudeLSTM:
         self.model = keras.Model(input_layer, output_layer)
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=["accuracy"])
 
-    def train(self, dataset: list[int], epochs: int = 50, batch_size: int = 64) -> None:
+    def train(self, dataset: List[int], epochs: int = 50, batch_size: int = 64) -> None:
         """Train the LSTM model
 
         :param dataset: Training dataset
@@ -66,7 +76,7 @@ class MukkeBudeLSTM:
         max_length: int = 128,
         max_sequence_length: int = 64,
         temperature=0.8,
-    ) -> list[str]:
+    ) -> List[str]:
         """Generate a new song
 
         :param start_seed: Starting string with start symbols and notes
@@ -80,6 +90,8 @@ class MukkeBudeLSTM:
 
         # Start the melody generation
         output_melody = []
+        output_melody.extend(start_seed.split(" "))
+
         for _ in range(max_length):
             # limit the seed to max_squenece_length
             # cut off the beginning of the seed if it is longer than max_sequence_length
@@ -114,7 +126,7 @@ class MukkeBudeLSTM:
             )
 
             # Stop if we have reached the end of the melody
-            if output_symbol == "/":
+            if output_symbol == "/" or output_symbol == "xxeos":
                 break
 
             # Update the output melody
@@ -122,7 +134,26 @@ class MukkeBudeLSTM:
 
         return output_melody
 
-    def __create_training_data(self, integer_sequence: list[int]) -> tuple[Any, np.ndarray]:
+    def save(self, path: os.PathLike) -> None:
+        """Save the model
+
+        :param path: Path to save the model
+        """
+        self.model.save(path)
+
+    @staticmethod
+    def load(mapping: MusicMapping, path: os.PathLike) -> "MukkeBudeLSTM":
+        """Load the model
+
+        :param mapping: Dictionary mapping unique symbols to integers
+        :param path: Path to the model
+        :return: Loaded model
+        """
+        model = keras.models.load_model(path)
+        mukkeBude = MukkeBudeLSTM(mapping=mapping, model=model)
+        return mukkeBude
+
+    def __create_training_data(self, integer_sequence: List[int]) -> Tuple[Any, np.ndarray]:
         """Create the training data
 
         :param integer_sequence: training data as integer sequence
