@@ -134,24 +134,25 @@ class MukkeBudeLSTM:
 
         return output_melody
 
-    def save(self, path: os.PathLike) -> None:
-        """Save the model
+    def save(self, name: str) -> None:
+        """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
 
-        :param path: Path to save the model
+        :param name: Name of the model
         """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         self.model.save(path)
 
     @staticmethod
-    def load(mapping: MusicMapping, path: os.PathLike) -> "MukkeBudeLSTM":
-        """Load the model
+    def load(mapping: MusicMapping, name: str) -> "MukkeBudeLSTM":
+        """Load the model with the given name from the `model/preTrainedModels` folder.
 
         :param mapping: Dictionary mapping unique symbols to integers
-        :param path: Path to the model
+        :param name: Name of the model
         :return: Loaded model
         """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         model = keras.models.load_model(path)
-        mukkeBude = MukkeBudeLSTM(mapping=mapping, model=model)
-        return mukkeBude
+        return MukkeBudeLSTM(mapping=mapping, model=model)
 
     def __create_training_data(self, integer_sequence: List[int]) -> Tuple[Any, np.ndarray]:
         """Create the training data

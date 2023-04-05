@@ -101,6 +101,23 @@ class MukkeBudeTransformer:
         cur_len = inputs.shape[1]
         output = self.model(inputs)
         return output[:, cur_len - 1, :]  # return next token logits
+    
+    def save(self, name: str):
+        """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
+
+        :param name: Name of the model
+        """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        self.model.save(path)
+
+    @staticmethod
+    def load(name: str):
+        """Load the model with the given name. The model will be loaded from the `model/preTrainedModels` folder.
+
+        :param name: Name of the model
+        """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        return tf.keras.models.load_model(path)
 
     def __loadDataset(
         self,
