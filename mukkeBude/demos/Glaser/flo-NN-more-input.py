@@ -1,13 +1,11 @@
 # This script creates a TensorFlow model with a neural network for the function y = 2x + z * k - 20
 # The input data is a set of points (x,y) that ist generated with the function y = 2x + z * k - 20
 # The model ist trained to find the y value for a given x value
-
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-
 # Helper libraries
-import numpy as np
-import matplotlib.pyplot as plt
 
 math_function = lambda x, z, k: x * 2 + z * k - 20
 
@@ -25,7 +23,7 @@ model = keras.Sequential(
         keras.layers.Dense(3, input_shape=(3,)),  # The input shape is 3 because the input data is x, z and k
         # keras.layers.Dense(20, activation="relu"),  # Hidden layer with 20 neurons
         keras.layers.Dense(1, activation="softmax"),  # Output layer with 1 neuron
-    ]
+    ],
 )
 
 # Compile the model

@@ -1,17 +1,24 @@
 name: tf-gpu
 channels:
-  - defaults
-  - conda-forge
+- defaults
+- conda-forge
 dependencies:
-  - python=3.9
-  - cudatoolkit=11.2
-  - cudnn=8.1.0
-  - music21
-  - jupyterlab
-  - pip
-  - pip:
-    - tensorflow=2.10
-    - black
-    - flake8
-    - mypy
-prefix: /home/deglasfl/miniconda3/envs/tf-gpu
+- python=3.9
+- conda-forge::cudatoolkit=11.2.2
+- conda-forge::cudnn=8.1.0
+- nvidia::cuda-nvcc
+- music21
+- jupyterlab
+  # - huggingface::transformers
+  # - datasets
+- pip
+- pip:
+  - tensorflow==2.10.*
+  - black
+  - flake8
+  - mypy
+  - pre-commit
+  - autoflake
+  - sacremoses
+  - keras-nlp
+# prefix: /home/deglasfl/miniconda3/envs/tf-gpu

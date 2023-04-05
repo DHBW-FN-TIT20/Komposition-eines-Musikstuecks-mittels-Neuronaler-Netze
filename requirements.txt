@@ -1,4 +1,6 @@
-tensorflow==2.10
+tensorflow==2.10.*
+sacremoses
+keras-nlp
 jupyterlab
 matplotlib
 music21
