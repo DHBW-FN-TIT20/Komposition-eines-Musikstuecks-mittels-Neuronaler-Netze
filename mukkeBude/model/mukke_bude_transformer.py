@@ -49,7 +49,6 @@ class MukkeBudeTransformer:
         self.model = keras.Model(inputs=inputs, outputs=outputs)
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         perplexity = keras_nlp.metrics.Perplexity(from_logits=True, mask_token_id=0)
-        accuracy = tf.keras.metrics.Accuracy()
 
         self.model.compile(optimizer="adam", loss=loss_fn, metrics=[perplexity])
 
@@ -61,6 +60,7 @@ class MukkeBudeTransformer:
         batch_size: int = 64,
         buffer_size: int = 256,
         epochs: int = 12,
+        tensorboard_callback: keras.callbacks.TensorBoard = None,
     ) -> tf.keras.callbacks.History:
         self.__loadDataset(
             path=path,
@@ -74,7 +74,15 @@ class MukkeBudeTransformer:
             tf.data.AUTOTUNE,
         )
 
-        return self.model.fit(self.train_ds, verbose=2, epochs=epochs)
+        # Only allow TenosrBoard callback
+        if tensorboard_callback is not None and not isinstance(tensorboard_callback, keras.callbacks.TensorBoard):
+            raise TypeError("Only TensorBoard callback allowed")
+        
+        args = {}
+        if tensorboard_callback is not None:
+            args["callbacks"] = [tensorboard_callback]
+
+        return self.model.fit(self.train_ds, verbose=2, epochs=epochs, **args)
 
     def generate(self, input: str, max_length: int = 128, probability=0.5) -> str:
         # Unpadded bos token.

@@ -60,15 +60,27 @@ class MukkeBudeLSTM:
         self.model = keras.Model(input_layer, output_layer)
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=["accuracy"])
 
-    def train(self, dataset: List[int], epochs: int = 50, batch_size: int = 64) -> None:
+    def train(
+        self,
+        dataset: List[int],
+        epochs: int = 50,
+        batch_size: int = 64,
+        tensorboard_callback: keras.callbacks.TensorBoard = None,
+    ) -> None:
         """Train the LSTM model
 
         :param dataset: Training dataset
         :param epochs: Number of epochs to train, defaults to 10
         :param batch_size: Size of the batches, defaults to 64
+        :param tensorboard_callback: There you can pass a TensorBoard callback, defaults to None
         """
         inputs, targets = self.__create_training_data(dataset)
-        self.model.fit(inputs, targets, epochs=epochs, batch_size=batch_size)
+
+        # Only allow TenosrBoard callback
+        if tensorboard_callback is not None and not isinstance(tensorboard_callback, keras.callbacks.TensorBoard):
+            raise TypeError("Only TensorBoard callback allowed")
+
+        self.model.fit(inputs, targets, epochs=epochs, batch_size=batch_size, callbacks=[tensorboard_callback])
 
     def generate(
         self,
