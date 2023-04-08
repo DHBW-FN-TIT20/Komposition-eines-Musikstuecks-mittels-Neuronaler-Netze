@@ -143,6 +143,8 @@ mukkeBude/runs
 mukkeBude/data.json
 *.midi
 *.musicxml
+mapping.txt
+logs
 
 # Exclude Folder with example music data
 !mukkeBude/songs

@@ -60,15 +60,27 @@ class MukkeBudeLSTM:
         self.model = keras.Model(input_layer, output_layer)
         self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=["accuracy"])
 
-    def train(self, dataset: List[int], epochs: int = 50, batch_size: int = 64) -> None:
+    def train(
+        self,
+        dataset: List[int],
+        epochs: int = 50,
+        batch_size: int = 64,
+        tensorboard_callback: keras.callbacks.TensorBoard = None,
+    ) -> None:
         """Train the LSTM model
 
         :param dataset: Training dataset
         :param epochs: Number of epochs to train, defaults to 10
         :param batch_size: Size of the batches, defaults to 64
+        :param tensorboard_callback: There you can pass a TensorBoard callback, defaults to None
         """
         inputs, targets = self.__create_training_data(dataset)
-        self.model.fit(inputs, targets, epochs=epochs, batch_size=batch_size)
+
+        # Only allow TenosrBoard callback
+        if tensorboard_callback is not None and not isinstance(tensorboard_callback, keras.callbacks.TensorBoard):
+            raise TypeError("Only TensorBoard callback allowed")
+
+        self.model.fit(inputs, targets, epochs=epochs, batch_size=batch_size, callbacks=[tensorboard_callback])
 
     def generate(
         self,
@@ -134,24 +146,25 @@ class MukkeBudeLSTM:
 
         return output_melody
 
-    def save(self, path: os.PathLike) -> None:
-        """Save the model
+    def save(self, name: str) -> None:
+        """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
 
-        :param path: Path to save the model
+        :param name: Name of the model
         """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         self.model.save(path)
 
     @staticmethod
-    def load(mapping: MusicMapping, path: os.PathLike) -> "MukkeBudeLSTM":
-        """Load the model
+    def load(mapping: MusicMapping, name: str) -> "MukkeBudeLSTM":
+        """Load the model with the given name from the `model/preTrainedModels` folder.
 
         :param mapping: Dictionary mapping unique symbols to integers
-        :param path: Path to the model
+        :param name: Name of the model
         :return: Loaded model
         """
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         model = keras.models.load_model(path)
-        mukkeBude = MukkeBudeLSTM(mapping=mapping, model=model)
-        return mukkeBude
+        return MukkeBudeLSTM(mapping=mapping, model=model)
 
     def __create_training_data(self, integer_sequence: List[int]) -> Tuple[Any, np.ndarray]:
         """Create the training data
