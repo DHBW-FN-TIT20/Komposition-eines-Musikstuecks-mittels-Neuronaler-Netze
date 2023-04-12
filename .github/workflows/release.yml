@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Pull git tags
+        run: git fetch --prune --unshallow --tags
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
@@ -25,10 +30,9 @@ jobs:
         run: poetry version $(echo ${{ github.ref }} | sed 's/refs\/tags\///')
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9.1.1
         with:
-          author_name: ${{ github.actor }}
-          author_email: ${{ github.actor }}@users.noreply.github.com
+          default_author: github_actions
           message: Update pyproject.toml
           add: pyproject.toml
 

@@ -3,7 +3,6 @@ name: Update requirements
 on:
   push:
     paths:
-      - pyproject.toml
       - poetry.lock
 
 jobs:
@@ -30,7 +29,7 @@ jobs:
         run: poetry export -f requirements.txt --without-hashes --with=dev --output requirements-dev.txt
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
