@@ -1,6 +1,8 @@
 # Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze
 Ziel der Studienarbeit ist die Komposition eines kleinen Musikstücks. Die Komposition erfolgt mittels eines Neuronalen Netzes.
 
+![](./flask-webapp/static/img/mukkebude.png)
+
 # Usage
 Hier wird beschrieben wir man das Projekt verwendet.
 
@@ -26,7 +28,7 @@ pip install mukkeBude
 Für die Verwendung der **Jupyter-Notebooks** muss jupyter-lab zusätzlich installiert werden!
 ```bash
 pip install jupyterlab
-``` 
+```
 
 ## Verwendung
 Nach einer erfolgreichen installtion kann das modul mittels `import mukkeBude` verwendet werden. Entsprechende Beispiele sind unter [demos](./demos/) zu finden.
@@ -34,7 +36,7 @@ Nach einer erfolgreichen installtion kann das modul mittels `import mukkeBude` v
 # Developing
 
 Hier wird beschrieben, wie man seine Entwicklungsumgebung entsprechend vorbereitet, um an dem Projekt zu entwicklen.
-Empfohlen ist die Verwendung von **Conda**, da hier die Verwendung von der GPU deutlich einfach ist. Bei der Verwendung der anderen Methoden müssen 
+Empfohlen ist die Verwendung von **Conda**, da hier die Verwendung von der GPU deutlich einfach ist. Bei der Verwendung der anderen Methoden müssen
 unter Umständen weitere Schritte unternommen werden, um die GPU zu verwenden.
 
 ## Conda

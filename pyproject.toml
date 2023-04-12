@@ -30,6 +30,7 @@ pre-commit = "^3.2.2"
 autoflake = "^2.0.2"
 build = "^0.10.0"
 jupyterlab = "^3.6.3"
+pdoc = "^13.1.0"
 
 [build-system]
 requires = ["poetry-core"]

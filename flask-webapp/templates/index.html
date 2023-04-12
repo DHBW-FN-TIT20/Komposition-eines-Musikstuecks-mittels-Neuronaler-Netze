@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>MukkeBude</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- favicon + app icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon') }}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon') }}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon') }}/favicon-16x16.png">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon') }}/site.webmanifest">
+    <link rel="mask-icon" href="{{ url_for('static', filename='favicon') }}/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon') }}/favicon.ico">
+</head>
+
+<body>
+    <div id="sideboard" style="gap: 0;">
+        <a href="/" class="self-center">
+            <img src="{{ url_for('static', filename='img') }}/mukkebude.png" id="mukkebude-logo">
+        </a>
+
+        <div style="background: #fff;"></div>
+
+        <div id="generate" class="flex-column-center pad-16 self-center">
+            <h2 class="bottom-16 cursor-default">Generierung:</h2>
+            <div id="choose-preset" class="flex-column">
+                {% for s in settings %}
+                    <div id="choose-{{ s.id }}" class="grid-preference">
+                        <h3 class="nowrap-ellipsis text-right cursor-default">{{ s.name }}:</h3>
+                        <div class="gap-8">
+                            {% for rb in s.radioButtons %}
+                            <div class="nowrap-ellipsis cursor-pointer-childs cursor-default">
+                                <input type="radio" id="{{ rb.id }}" name="{{ s.id }}" value="{{ rb.value }}"{% if rb.checked %} checked{% endif %}>
+                                <label for="{{ rb.id }}">{{ rb.label }}</label><br>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                <button id="generate-button" class="center bottom-8" onclick="generate_new_song()">Generierung starten (TODO)</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #fff;"></div>
+
+    <div id="main" class="pad-16">
+        <div class="max-100">
+            {% set downloadable = False %}
+            {% if midi %}
+                {% set header = 'Generierter Song:' %}
+                {% set downloadable = True %}
+            {% else %}
+                {% if midiExample %}
+                    {% set midi = 'examples/' + midiExample %}
+                    {% set header = 'Beispiel: ' + midiExample %}
+                {% else %}
+                    {% set midi = 'examples/' + placeholder %}
+                    {% set header = 'Beispiel: ' + placeholder %}
+                {% endif %}
+            {% endif %}
+            <div id="song-header" class="bottom-16 min-790">
+                {% if downloadable %}
+                    <button id="download-current-midi" class="h-34"><a href="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" target="_blank">Diesen Song herunterladen</a></button>
+                {% endif %}
+                <h2 id="abc-file-location" class="flex-center h-34" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">{{ header }}</h2>
+            </div>
+            <div class="min-790">
+                <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
+                <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid"></midi-visualizer>
+            </div>
+            <div id="abcjs" class="center bottom-16"></div>
+        </div>
+
+        <button id="toggle-sideboard" onclick="toggleSideboard()">&#706; close</button>
+
+        <div id="loading-screen">
+            <img src="{{ url_for('static', filename='img') }}/loading.png" class="rotate">
+            <p>Song wird generiert...</p>
+        </div>
+    </div>
+
+    <div id="help" class="modal" isHidden="True">
+        <div class="grid-links bottom-32">
+            <a href="/examples/generated_song_p0_8_withSeed">
+                <img src="{{ url_for('static', filename='img') }}/bach.png">
+                <span>Beispiel - Bach</span>
+            </a>
+            <a href="/examples/DonkeyKong">
+                <img src="{{ url_for('static', filename='img') }}/guitar.png">
+                <span>Beispiel - Pink Floyd</span>
+            </a>
+            <a href="/examples/generated_song_pokemon">
+                <img src="{{ url_for('static', filename='img') }}/controller.png">
+                <span>Beispiel - Videospiele</span>
+            </a>
+        </div>
+    </div>
+    <button id="toggleHelp" class="modal-button" onclick="toggleHelp()">?</button>
+    <div id="links" class="modal" isHidden="True">
+        <div class="grid-links bottom-32">
+            <a href="https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+                <span>GitHub-Repository</span>
+            </a>
+            <a href="https://github.com/DHBW-FN-TIT20/Dokumentation-Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='img') }}/github-mark-white.svg">
+                <span>GitHub-Dokumentation</span>
+            </a>
+        </div>
+    </div>
+    <button id="toggleInfo" class="modal-button" onclick="toggleInfo()">i</button>
+</body>
+
+<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+<script src="{{ url_for('static', filename='jquery-3.6.4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='abcjs.min.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</html>
