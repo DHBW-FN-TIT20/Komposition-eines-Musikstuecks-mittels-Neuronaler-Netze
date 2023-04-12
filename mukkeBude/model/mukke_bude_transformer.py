@@ -110,13 +110,15 @@ class MukkeBudeTransformer:
         output = self.model(inputs)
         return output[:, cur_len - 1, :]  # return next token logits
     
-    def save(self, name: str):
+    def save(self, name: str) -> str:
         """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
 
         :param name: Name of the model
+        :return: Path to the saved model
         """
         path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         self.model.save(path)
+        return path
 
     @staticmethod
     def load(name: str):

@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "mukkeBude"
+version = "0.0.2"
+description = "A music generation library with transformer and lstm models',"
+authors = ["Florian Glaser <Florian.Glaser@ifm.com>", "Florian Herkommer <Florian.Herkommer@ifm.com>", "David Felder <David.Felder@ifm.com>"]
+readme = "README.md"
+homepage = "https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze"
+repository = "https://github.com/DHBW-FN-TIT20/Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze"
+packages = [
+    { include = "mukkeBude" }
+]
+
+
+[tool.poetry.dependencies]
+python = "3.9.*"
+tensorflow = "2.10.*"
+tensorflow-text = "2.10.0"
+sacremoses = "0.0.53"
+keras-nlp = "0.4.1"
+matplotlib = "^3.7.1"
+music21 = "^8.1.0"
+
+[tool.poetry.group.dev.dependencies]
+setuptools = "^67.6.1"
+wheel = "^0.40.0"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+mypy = "^1.2.0"
+pre-commit = "^3.2.2"
+autoflake = "^2.0.2"
+build = "^0.10.0"
+jupyterlab = "^3.6.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

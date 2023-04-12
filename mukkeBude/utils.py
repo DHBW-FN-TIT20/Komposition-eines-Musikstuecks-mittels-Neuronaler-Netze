@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 from typing import List
 from typing import Union
+from typing import Dict
 
 import music21 as m21
 import numpy as np
@@ -24,7 +25,7 @@ ACCAPTABLE_DURATIONS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0]
 SEQType = Enum("SEQType", "Mask, Sentence, Melody, Chords, Empty")
 
 
-def create_train_data_json(encoded_song: np.ndarray, sequence_length=32) -> list[dict]:
+def create_train_data_json(encoded_song: np.ndarray, sequence_length=32) -> List[Dict]:
     num_sequences = len(encoded_song) - sequence_length
 
     data = []
@@ -106,13 +107,13 @@ def read_single_from_corpus(corpus_path: str) -> m21.stream.Score:
 
 
 def read_all(folder_path: str) -> List[Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]]:
-    """Converts all files in folder to list[music21.stream.Score]. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
+    """Converts all files in folder to List[music21.stream.Score]. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
 
     Args:
         folder_path (str): the path to the folder
 
     Returns:
-        list[m21.stream.Score]: list of converted songs
+        List[m21.stream.Score]: list of converted songs
     """
     songs = []
     for path, subdir, files in os.walk(folder_path):
@@ -122,7 +123,7 @@ def read_all(folder_path: str) -> List[Union[m21.stream.Score, m21.stream.Part, 
     return songs
 
 
-def transpose_songs(songs: list[m21.stream.Score]) -> list[m21.stream.Score]:
+def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
     """Transpose songs to c major or a minor
 
     :param songs: list of songs
@@ -157,7 +158,7 @@ def transpose_songs(songs: list[m21.stream.Score]) -> list[m21.stream.Score]:
     return transposed_songs
 
 
-def encode_songs_old(songs: list[m21.stream.Score]) -> list[list[str]]:
+def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
     """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param songs: list of songs
@@ -195,7 +196,7 @@ def encode_songs_old(songs: list[m21.stream.Score]) -> list[list[str]]:
     return encoded_songs
 
 
-def decode_songs_old(song: list[str]) -> m21.stream.Stream:
+def decode_songs_old(song:List[str]) -> m21.stream.Stream:
     # Remove the "n" symbol from the notes
     song = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song]
 
@@ -230,7 +231,7 @@ def decode_songs_old(song: list[str]) -> m21.stream.Stream:
     return m21_stream
 
 
-def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int, mapping: Any) -> list[int]:
+def load_dataset_lstm(paths: List[os.PathLike], sequence_length: int, mapping: Any) -> List[int]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
 
     :param paths: Path to the songs
@@ -238,7 +239,7 @@ def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int, mapping: A
     :param mapping: the mapping of the dataset
     :return: Decoded songs in a list
     """
-    songs: list[m21.stream.Score] = []
+    songs: List[m21.stream.Score] = []
 
     for path in paths:
         songs.append(read_single_from_corpus(path))  # type: ignore
@@ -267,7 +268,7 @@ def load_dataset_lstm(paths: list[os.PathLike], sequence_length: int, mapping: A
 
     # Create the dataset
     song_delimiters = "/ " * sequence_length
-    dataset: list[int] = []
+    dataset: List[int] = []
     for song in encoded_songs:  # type: ignore
         dataset.extend(mapping.numericalize(song_delimiters))
         dataset.extend(mapping.numericalize(song))

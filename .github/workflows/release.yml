@@ -1,0 +1,92 @@
+name: New Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  update-pyproject:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Update pyproject.toml
+        run: poetry version $(echo ${{ github.ref }} | sed 's/refs\/tags\///')
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: ${{ github.actor }}
+          author_email: ${{ github.actor }}@users.noreply.github.com
+          message: Update pyproject.toml
+          add: pyproject.toml
+
+  build:
+    needs: update-pyproject
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Build package
+        run: poetry build --no-interaction -f wheel
+
+      - name: Upload package
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: PyPi token
+
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+
+      - name: Create Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          files: |
+            dist/**
