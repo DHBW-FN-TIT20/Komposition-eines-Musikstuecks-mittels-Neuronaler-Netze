@@ -5,7 +5,7 @@ from typing import Tuple
 
 import keras
 import numpy as np
-from mapping import MusicMapping
+from mukkeBude.mapping import MusicMapping
 
 
 class MukkeBudeLSTM:
@@ -146,13 +146,15 @@ class MukkeBudeLSTM:
 
         return output_melody
 
-    def save(self, name: str) -> None:
+    def save(self, name: str) -> str:
         """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
 
         :param name: Name of the model
+        :return: Path to the saved model
         """
         path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
         self.model.save(path)
+        return path
 
     @staticmethod
     def load(mapping: MusicMapping, name: str) -> "MukkeBudeLSTM":

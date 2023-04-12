@@ -1,6 +1,6 @@
 import pickle
 
-from utils import *
+from mukkeBude.utils import *
 
 BOS = "xxbos"
 PAD = "xxpad"
@@ -22,15 +22,15 @@ DUR_START, DUR_END = DUR_TOKS[0], DUR_TOKS[-1]
 
 
 class MusicMapping:
-    def __init__(self, itos: list[str]):
+    def __init__(self, itos: List[str]):
         self.itos = itos
         self.stoi = {v: k for k, v in enumerate(self.itos)}
 
-    def numericalize(self, tokens: list[str]) -> list[int]:
+    def numericalize(self, tokens: List[str]) -> List[int]:
         "Convert a list of tokens `t` to their ids."
         return [self.stoi[w] for w in tokens]
 
-    def textify(self, nums: list[int], sep=" ") -> list[str]:
+    def textify(self, nums: List[int], sep=" ") -> List[str]:
         "Convert a list of `nums` to their tokens."
         items = [self.itos[i] for i in nums]
         return sep.join(items) if sep is not None else items
