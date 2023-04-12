@@ -1,7 +1,7 @@
 # Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze
 Ziel der Studienarbeit ist die Komposition eines kleinen Musikstücks. Die Komposition erfolgt mittels eines Neuronalen Netzes.
 
-# Setup
+# Developing
 
 ## Conda
 Installation mithilfe von conda:
@@ -18,9 +18,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/
 Ohne venv:
 
 ```bash
-pip install -r requirements.txt
-
-# or for dev
 pip install -r requirements-dev.txt
 ```
 
@@ -30,8 +27,11 @@ Mit venv:
 python -m venv .venv
 source .venv/bin/activate
 
-pip install -r requirements.txt
-
-# or for dev
 pip install -r requirements-dev.txt
+```
+
+## Poetry
+```bash
+poetry install --with=dev
+poetry shell
 ```
