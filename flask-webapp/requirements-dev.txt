@@ -1,1 +1,4 @@
 flask
+mukkeBude
+numpy
+music21
