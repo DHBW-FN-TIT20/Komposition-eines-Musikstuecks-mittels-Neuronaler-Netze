@@ -5,6 +5,7 @@ from typing import Tuple
 
 import keras
 import numpy as np
+
 from mukkeBude.mapping import MusicMapping
 
 
@@ -88,7 +89,7 @@ class MukkeBudeLSTM:
         max_length: int = 128,
         max_sequence_length: int = 64,
         temperature=0.8,
-    ) -> List[str]:
+    ) -> str:
         """Generate a new song
 
         :param start_seed: Starting string with start symbols and notes
@@ -142,9 +143,9 @@ class MukkeBudeLSTM:
                 break
 
             # Update the output melody
-            output_melody.append(output_symbol)
+            output_melody.extend(output_symbol)
 
-        return output_melody
+        return " ".join(output_melody)
 
     def save(self, name: str) -> str:
         """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
@@ -152,7 +153,7 @@ class MukkeBudeLSTM:
         :param name: Name of the model
         :return: Path to the saved model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         self.model.save(path)
         return path
 
@@ -164,7 +165,7 @@ class MukkeBudeLSTM:
         :param name: Name of the model
         :return: Loaded model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         model = keras.models.load_model(path)
         return MukkeBudeLSTM(mapping=mapping, model=model)
 

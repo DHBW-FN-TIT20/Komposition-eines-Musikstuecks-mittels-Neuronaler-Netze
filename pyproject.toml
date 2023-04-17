@@ -15,7 +15,6 @@ packages = [
 python = ">=3.9,<3.12"
 tensorflow = "2.10.*"
 tensorflow-text = "2.10.0"
-sacremoses = "0.0.53"
 keras-nlp = "0.4.1"
 matplotlib = "^3.7.1"
 music21 = "^8.1.0"
