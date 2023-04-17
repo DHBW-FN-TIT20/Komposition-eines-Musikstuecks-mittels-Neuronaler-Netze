@@ -153,7 +153,7 @@ class MukkeBudeLSTM:
         :param name: Name of the model
         :return: Path to the saved model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         self.model.save(path)
         return path
 
@@ -165,7 +165,7 @@ class MukkeBudeLSTM:
         :param name: Name of the model
         :return: Loaded model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", name)
+        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         model = keras.models.load_model(path)
         return MukkeBudeLSTM(mapping=mapping, model=model)
 
