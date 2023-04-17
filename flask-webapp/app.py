@@ -72,7 +72,6 @@ def midi_viewer(midi=None):
         placeholder="Zelda",
         midiExample=False,
         settings=settings,
-        exampleFiles=exampleFiles,
     )
 
 
@@ -85,7 +84,6 @@ def midi_viewer_example(midiExample=None):
         placeholder="Zelda",
         midiExample=midiExample,
         settings=settings,
-        exampleFiles=exampleFiles,
     )
 
 
@@ -112,6 +110,6 @@ def return_generated_name():
         instrument=m21Instrument[instrument],
     )
 
-    mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.midi")
+    mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
 
     return generatedName
