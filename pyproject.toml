@@ -12,12 +12,13 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "3.9.*"
+python = ">=3.9,<3.12"
 tensorflow = "2.10.*"
 tensorflow-text = "2.10.0"
 keras-nlp = "0.4.1"
 matplotlib = "^3.7.1"
 music21 = "^8.1.0"
+tensorflow-io-gcs-filesystem = "0.31.0"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^67.6.1"
