@@ -14,7 +14,7 @@ def midi_viewer(midi=None):
     return render_template(
         "index.html",
         midi=midi,
-        placeholder="Zelda",
+        placeholder="generated_song_p0_8_withSeed",
         midiExample=False,
         settings=settings,
     )
@@ -26,7 +26,7 @@ def midi_viewer_example(midiExample=None):
     return render_template(
         "index.html",
         midi=None,
-        placeholder="Zelda",
+        placeholder="generated_song_p0_8_withSeed",
         midiExample=midiExample,
         settings=settings,
     )
@@ -56,5 +56,6 @@ def return_generated_name():
     )
 
     mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
+    mukkeBude_utils.write_musicxml(new_song, f"{mxlLocation}/{generatedName}.musicxml")
 
     return generatedName

@@ -7,7 +7,7 @@ from mukkeBude.model import MukkeBudeLSTM
 from mukkeBude.model import MukkeBudeTransformer
 
 midiLocation = dirname(__file__) + "/static/midi"
-abcLocation = dirname(__file__) + "/static/abc"
+mxlLocation = dirname(__file__) + "/static/mxl"
 
 mapping = MusicMapping.create()
 models = {
