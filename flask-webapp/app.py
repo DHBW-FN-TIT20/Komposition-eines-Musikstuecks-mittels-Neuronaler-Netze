@@ -1,5 +1,5 @@
 from typing import Union
-
+import time
 import numpy as np
 from flask import Flask
 from flask import render_template
@@ -41,7 +41,9 @@ def return_generated_name():
     instrument = request.args.get("instrument") or "Piano"
     bpm = request.args.get("bpm") or 90
 
-    generatedName = model + length + music + coding + instrument + bpm
+    timestamp = str(time.time())
+    timestamp = timestamp.replace('.', '')
+    generatedName = model + length + music + coding + instrument + bpm + timestamp
 
     start_seed = models[model][music][f"Seed{coding}"]
     model: Union[MukkeBudeLSTM, MukkeBudeTransformer] = models[model][music][coding]
