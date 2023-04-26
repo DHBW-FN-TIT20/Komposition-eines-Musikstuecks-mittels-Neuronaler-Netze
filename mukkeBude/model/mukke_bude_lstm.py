@@ -149,6 +149,7 @@ class MukkeBudeLSTM:
 
     def save(self, name: str) -> str:
         """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
+        It will be saved as a `.h5` file. The extension will be added automatically.
 
         :param name: Name of the model
         :return: Path to the saved model

@@ -1,4 +1,5 @@
 import os
+import pickle
 
 import keras_nlp
 import tensorflow as tf
@@ -22,7 +23,12 @@ NUM_TOKENS_TO_GENERATE = 80
 
 # TODO add load and save trained model, add output of diagrams during training (for documentation)
 class MukkeBudeTransformer:
-    def __init__(self, mapping: MusicMapping, model: keras.Model = None) -> None:
+    def __init__(
+        self,
+        mapping: MusicMapping,
+        model: keras.Model = None,
+        # tokenizer: keras_nlp.tokenizers.WordPieceTokenizer = None,
+    ) -> None:
         """Transformer model for MukkeBude
 
         :param mapping: Dictionary mapping unique symbols to integers
@@ -33,6 +39,7 @@ class MukkeBudeTransformer:
 
         if model is not None:
             self.model = model
+            # self.tokenizer = tokenizer
             return
 
         inputs = keras.layers.Input(shape=(None,), dtype=tf.int32)
@@ -93,18 +100,21 @@ class MukkeBudeTransformer:
         if tensorboard_callback is not None:
             args["callbacks"] = [tensorboard_callback]
 
-        return self.model.fit(self.train_ds, verbose=2, epochs=epochs, **args)
+        self.model.fit(self.train_ds, verbose=2, epochs=epochs, **args)
+
+        # Add tokenizer to the model
+        inputs = keras.Input(shape=(), dtype=tf.string)
+        tokens = self.tokenizer(inputs)
+        outputs = self.model(tokens)
+
+        self.model = keras.Model(inputs, outputs)
 
     def generate(self, start_seed: str, max_length: int = 128, probability=0.5) -> str:
-        # Unpadded bos token.
-        # TODO consider using a sequence of start_seed (split by ' ' and tokenize every element)
         prompts = start_seed.split(" ")
         prompt_ids = []
-        for prompt in prompts:
-            prompt_ids.append(self.tokenizer.token_to_id(prompt))
+        # for prompt in prompts:
+        #     prompt_ids.append(self.tokenizer.token_to_id(prompt))
         prompt_tokens = tf.convert_to_tensor(prompt_ids)
-        # prompt_tokens = tf.convert_to_tensor([self.tokenizer.token_to_id(start_seed)])
-        print(f"prompt_tokens: {prompt_tokens}")
 
         output_tokens = keras_nlp.utils.top_p_search(
             self.token_logits_fn,
@@ -118,18 +128,26 @@ class MukkeBudeTransformer:
 
     def token_logits_fn(self, inputs):
         cur_len = inputs.shape[1]
+        inputs = tf.reshape(inputs, [cur_len,])
         output = self.model(inputs)
         return output[:, cur_len - 1, :]  # return next token logits
 
     def save(self, name: str) -> str:
         """Save the model with the given name. The model will be saved in the `model/preTrainedModels` folder.
+        It will be saved as a `.h5` file. The extension will be added automatically.
 
         :param name: Name of the model
         :return: Path to the saved model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
-        self.model.save(path)
-        return path
+        # save model
+        model_path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
+        self.model.save(model_path)
+
+        # # save tokenizer
+        # with open(os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}_tokenizer.pickle"), "wb") as f:
+        #     pickle.dump(self.tokenizer, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+        return model_path
 
     @staticmethod
     def load(mapping: MusicMapping, name: str) -> "MukkeBudeTransformer":
@@ -139,8 +157,14 @@ class MukkeBudeTransformer:
         :param name: Name of the model
         :return: Loaded model
         """
+        # load model
         path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         model = keras.models.load_model(path)
+
+        # load tokenizer
+        # with open(os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}_tokenizer.pickle"), "rb") as f:
+        #     tokenizer = pickle.load(f)
+
         return MukkeBudeTransformer(mapping=mapping, model=model)
 
     def __loadDataset(
