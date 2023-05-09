@@ -4,9 +4,9 @@ from enum import Enum
 from itertools import groupby
 from pathlib import Path
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Union
-from typing import Dict
 
 import music21 as m21
 import numpy as np
@@ -196,18 +196,25 @@ def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
     return encoded_songs
 
 
-def decode_songs_old(song:List[str]) -> m21.stream.Stream:
+def decode_songs_old(song: str) -> m21.stream.Stream:
+    """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
+
+    :param song: the encoded song
+    :return: the decoded song
+    """
+    song_splitted = song.split(" ")
+
     # Remove the "n" symbol from the notes
-    song = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song]
+    song_splitted = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song_splitted]
 
     m21_stream: m21.stream.Stream = m21.stream.Stream()
     start_symbol = None
     step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
     step_duration = 0.25  # The duration of one step in quarter length
 
-    for index, symbol in enumerate(song):
+    for index, symbol in enumerate(song_splitted):
         # If the symbol is a note or a rest or the end of the melody
-        if symbol != "_" or index == len(song) - 1:
+        if symbol != "_" or index == len(song_splitted) - 1:
             # Ensure that the symbol is not the start symbol
             if start_symbol is not None:
                 quarter_length_duration = step_duration * step_counter  # 0.25 * 1 = 0.25, 0.25 * 2 = 0.5, 0.25 * 4 = 1
@@ -229,6 +236,21 @@ def decode_songs_old(song:List[str]) -> m21.stream.Stream:
             step_counter += 1
 
     return m21_stream
+
+
+def replace_special_tokens(song: List[Union[int,str]], replace: Union[int,str], tokens: List[Union[int,str]]) -> List[Union[int,str]]:
+    """Replace the special tokens in the song with the given replacement.
+
+    :param song: the song
+    :param replace: the replacement
+    :param tokens: the tokens to replace
+    :return: the song with replaced tokens
+    """
+    for symbol in song:
+        if symbol in tokens:
+            print(f"Replacing {symbol} with {replace}")
+
+    return [replace if symbol in tokens else symbol for symbol in song]
 
 
 def load_dataset_lstm(paths: List[os.PathLike], sequence_length: int, mapping: Any) -> List[int]:
