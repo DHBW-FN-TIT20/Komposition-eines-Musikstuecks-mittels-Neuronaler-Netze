@@ -123,7 +123,7 @@ class MukkeBudeTransformer:
             p=probability,
             from_logits=True,
         )
-        txt = self.tokenizer.detokenize(output_tokens)
+        txt = self.tokenizer.detokenize(output_tokens).numpy().decode("utf-8")
         return txt
 
     def token_logits_fn(self, inputs):

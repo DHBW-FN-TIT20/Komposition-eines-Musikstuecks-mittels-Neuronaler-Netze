@@ -132,18 +132,18 @@ class MukkeBudeLSTM:
             seed.append(index)
 
             # Map the index to the note
-            output_symbol = self.mapping.textify(
+            output_symbol: str = self.mapping.textify(
                 [
                     index,
                 ],
-            )
+            )  # type: ignore
 
             # Stop if we have reached the end of the melody
             if output_symbol == "/" or output_symbol == "xxeos":
                 break
 
             # Update the output melody
-            output_melody.extend(output_symbol)
+            output_melody.append(output_symbol)
 
         return " ".join(output_melody)
 
