@@ -4,9 +4,9 @@ from enum import Enum
 from itertools import groupby
 from pathlib import Path
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Union
-from typing import Dict
 
 import music21 as m21
 import numpy as np
@@ -139,7 +139,7 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
         except IndexError:
             key = None
 
-        # If no key siganture is found, we use music21's key guessing algorithm
+        # If key siganture is found, we use music21's key guessing algorithm
         if not isinstance(key, m21.key.Key):
             key = song.analyze("key")
 
@@ -196,18 +196,25 @@ def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
     return encoded_songs
 
 
-def decode_songs_old(song:List[str]) -> m21.stream.Stream:
+def decode_songs_old(song: str) -> m21.stream.Stream:
+    """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
+
+    :param song: the encoded song
+    :return: the decoded song
+    """
+    song_splitted = song.split(" ")
+
     # Remove the "n" symbol from the notes
-    song = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song]
+    song_splitted = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song_splitted]
 
     m21_stream: m21.stream.Stream = m21.stream.Stream()
     start_symbol = None
     step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
     step_duration = 0.25  # The duration of one step in quarter length
 
-    for index, symbol in enumerate(song):
+    for index, symbol in enumerate(song_splitted):
         # If the symbol is a note or a rest or the end of the melody
-        if symbol != "_" or index == len(song) - 1:
+        if symbol != "_" or index == len(song_splitted) - 1:
             # Ensure that the symbol is not the start symbol
             if start_symbol is not None:
                 quarter_length_duration = step_duration * step_counter  # 0.25 * 1 = 0.25, 0.25 * 2 = 0.5, 0.25 * 4 = 1
@@ -231,12 +238,37 @@ def decode_songs_old(song:List[str]) -> m21.stream.Stream:
     return m21_stream
 
 
-def load_dataset_lstm(paths: List[os.PathLike], sequence_length: int, mapping: Any) -> List[int]:
+def replace_special_tokens(
+    song: List[Union[int, str]],
+    replace: Union[int, str],
+    tokens: List[Union[int, str]],
+) -> List[Union[int, str]]:
+    """Replace the special tokens in the song with the given replacement.
+
+    :param song: the song
+    :param replace: the replacement
+    :param tokens: the tokens to replace
+    :return: the song with replaced tokens
+    """
+    for symbol in song:
+        if symbol in tokens:
+            print(f"Replacing {symbol} with {replace}")
+
+    return [replace if symbol in tokens else symbol for symbol in song]
+
+
+def load_dataset_lstm(
+    paths: List[os.PathLike],
+    sequence_length: int,
+    mapping: Any,
+    raw_songs=False,
+) -> Union[List[int], List[str]]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
 
     :param paths: Path to the songs
     :param sequence_length: length of the sequences
     :param mapping: the mapping of the dataset
+    :param raw_songs: if True, the songs will not merged in one big list and in string format
     :return: Decoded songs in a list
     """
     songs: List[m21.stream.Score] = []
@@ -265,6 +297,12 @@ def load_dataset_lstm(paths: List[os.PathLike], sequence_length: int, mapping: A
 
     # Encode the songs
     encoded_songs = encode_songs_old(songs)
+
+    if raw_songs:
+        tmp_encoded_songs: List[str] = []
+        for encoded_song in encoded_songs:
+            tmp_encoded_songs.append(" ".join(encoded_song))
+        return tmp_encoded_songs
 
     # Create the dataset
     song_delimiters = "/ " * sequence_length
@@ -485,8 +523,11 @@ def group_notes_by_duration(notes):
 
 
 def indexarr_to_encodedarr(index_arr, mapping, validate=True):
+    index_arr = fix_encodedarr_order(index_arr, mapping)
+
     if validate:
         index_arr = validate_indexarr(index_arr, mapping.npenc_range)
+
     # convert from 1d arr two 2d arr
     index_arr = index_arr.copy().reshape(-1, 2)
     if index_arr.shape[0] == 0:
@@ -519,3 +560,45 @@ def validate_encodedarr(t):
         print("Non midi note detected. Only returning valid portion. Index, seed", invalid_idx, t.shape)
         return t[:invalid_idx]
     return t
+
+
+def fix_encodedarr_order(song: np.ndarray, mapping: Any) -> np.ndarray:
+    """Fix the order of the encoded song. The order coud be note note or duration duration, but it should be note duration note duration.
+
+    :param song: song to fix
+    :param mapping: mapping of the integers to symbols
+    :return: song with fixed order
+    """
+    # Create a copy of the song
+    song_copy = song.copy()
+
+    note_range = mapping.note_range
+    dur_range = mapping.dur_range
+
+    # validate and reorder until the song is valid
+    index = 0
+    while True:
+        # validate note, ignore SEP
+        if song_copy[index] < note_range[0] or song_copy[index] >= note_range[1]:
+            if song_copy[index] != mapping.sep_idx:
+                # delete the index
+                song_copy = np.delete(song_copy, index)
+
+                # restart the loop
+                index = 0
+                continue
+
+        # validate duration
+        if song_copy[index + 1] < dur_range[0] or song_copy[index + 1] >= dur_range[1]:
+            # delete the index
+            song_copy = np.delete(song_copy, index + 1)
+
+            # restart the loop
+            index = 0
+            continue
+
+        index += 2
+
+        # check if the next index is the end of the song
+        if index + 2 >= len(song_copy):
+            return song_copy
