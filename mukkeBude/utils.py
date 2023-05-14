@@ -62,7 +62,7 @@ def create_train_data(encoded_songs: List[str], path: os.PathLike) -> None:
             f.write(song + "\n")
 
 
-def read_single(file_path: str) -> Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]:
+def read_single(file_path: os.PathLike) -> Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]:
     """Convert file of a song to music21.stream.Score. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
 
     Args:
@@ -71,7 +71,7 @@ def read_single(file_path: str) -> Union[m21.stream.Score, m21.stream.Part, m21.
     Returns:
         m21.stream.Score: the converted song
     """
-    return m21.converter.parse(file_path)
+    return m21.converter.parse(file_path)  # type: ignore
 
 
 def write_midi(song: m21.stream.Score, output_path: str = "test.mid") -> None:
@@ -106,20 +106,19 @@ def read_single_from_corpus(corpus_path: str) -> m21.stream.Score:
     return m21.corpus.parse(corpus_path)
 
 
-def read_all(folder_path: str) -> List[Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]]:
-    """Converts all files in folder to List[music21.stream.Score]. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
+def read_all(files: List[os.PathLike]) -> List[Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]]:
+    """Converts all files to List[music21.stream.Score]. Accepted file types are .mid, .midi, .krn, .abc, .mxl, .musicxml
 
     Args:
-        folder_path (str): the path to the folder
+        files (os.PathLike): path to files
 
     Returns:
         List[m21.stream.Score]: list of converted songs
     """
     songs = []
-    for path, subdir, files in os.walk(folder_path):
-        for file in files:
-            song = read_single(os.path.join(path, file))
-            songs.append(song)
+    for file in files:
+        song = read_single(file)
+        songs.append(song)
     return songs
 
 
@@ -262,6 +261,7 @@ def load_dataset_lstm(
     sequence_length: int,
     mapping: Any,
     raw_songs=False,
+    corpus=True,
 ) -> Union[List[int], List[str]]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
 
@@ -269,12 +269,16 @@ def load_dataset_lstm(
     :param sequence_length: length of the sequences
     :param mapping: the mapping of the dataset
     :param raw_songs: if True, the songs will not merged in one big list and in string format
+    :param corpus: if True, the songs will be read from the corpus. Else you need to set False
     :return: Decoded songs in a list
     """
     songs: List[m21.stream.Score] = []
 
-    for path in paths:
-        songs.append(read_single_from_corpus(path))  # type: ignore
+    if corpus:
+        for path in paths:
+            songs.append(read_single_from_corpus(path))  # type: ignore
+    else:
+        songs = read_all(paths)  # type: ignore
 
     # Filter out songs with bad durations
     bad_songs = []
