@@ -20,7 +20,7 @@ SAMPLE_FREQ = 4
 NOTE_SIZE = 128
 DUR_SIZE = (10 * BPB * SAMPLE_FREQ) + 1  # Max length - 8 bars. Or 16 beats/quarternotes
 MAX_NOTE_DUR = 8 * BPB * SAMPLE_FREQ
-ACCAPTABLE_DURATIONS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0]
+ACCEPTABLE_DURATIONS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0]
 
 SEQType = Enum("SEQType", "Mask, Sentence, Melody, Chords, Empty")
 
@@ -285,7 +285,7 @@ def load_dataset_lstm(
 
     for index, song in enumerate(songs):
         for note in song.flat.notesAndRests:
-            if note.duration.quarterLength not in ACCAPTABLE_DURATIONS:
+            if note.duration.quarterLength not in ACCEPTABLE_DURATIONS:
                 bad_songs.append(index)
                 break
 
