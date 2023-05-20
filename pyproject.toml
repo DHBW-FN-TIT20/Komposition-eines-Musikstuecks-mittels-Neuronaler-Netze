@@ -31,6 +31,7 @@ autoflake = "^2.0.2"
 build = "^0.10.0"
 jupyterlab = "^3.6.3"
 pdoc = "^13.1.0"
+pydot = "^1.4.2"
 
 [build-system]
 requires = ["poetry-core"]
