@@ -40,10 +40,11 @@ def return_generated_name():
     coding = request.args.get("coding") or "SoloMelodie"
     instrument = request.args.get("instrument") or "Piano"
     bpm = request.args.get("bpm") or 90
+    key = request.args.get("key") or "C"
 
     timestamp = str(time.time())
-    timestamp = timestamp.replace('.', '')
-    generatedName = model + length + music + coding + instrument + bpm + timestamp
+    timestamp = timestamp.replace(".", "")
+    generatedName = model + length + music + coding + instrument + bpm + key + timestamp
 
     start_seed = models[model][music][f"Seed{coding}"]
     model: Union[MukkeBudeLSTM, MukkeBudeTransformer] = models[model][music][coding]
@@ -56,6 +57,9 @@ def return_generated_name():
         bpm=int(bpm),
         instrument=m21Instrument[instrument],
     )
+
+    # TODO write util function to transpose song to specific key
+    # new_song = mukkeBude_utils.transpose_song_to_specific_key(new_song, key)
 
     mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
     mukkeBude_utils.write_musicxml(new_song, f"{mxlLocation}/{generatedName}.musicxml")

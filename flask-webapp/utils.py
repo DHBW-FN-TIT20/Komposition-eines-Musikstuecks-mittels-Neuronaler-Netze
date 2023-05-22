@@ -179,4 +179,28 @@ settings = [
             },
         ],
     },
+    {
+        "id": "key",
+        "name": "Tonart",
+        "radioButtons": [
+            {
+                "id": "C",
+                "value": "C",
+                "label": "C-Dur / a-Moll",
+                "checked": True,
+            },
+            {
+                "id": "E",
+                "value": "E",
+                "label": "E-Dur / cis-Moll",
+                "checked": False,
+            },
+            {
+                "id": "G",
+                "value": "G",
+                "label": "G-Dur / e-Moll",
+                "checked": False,
+            },
+        ],
+    },
 ]

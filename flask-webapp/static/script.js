@@ -72,7 +72,8 @@ let generate_new_song = () => {
         music: $(`input[type='radio'][name='music']:checked`).val(),
         coding: $(`input[type='radio'][name='coding']:checked`).val(),
         instrument: $(`input[type='radio'][name='instrument']:checked`).val(),
-        bpm: $(`input[type='radio'][name='bpm']:checked`).val()
+        bpm: $(`input[type='radio'][name='bpm']:checked`).val(),
+        key: $(`input[type='radio'][name='key']:checked`).val()
     };
 
     let url = '/';
