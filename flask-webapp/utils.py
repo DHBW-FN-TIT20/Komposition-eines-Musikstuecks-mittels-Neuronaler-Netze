@@ -89,7 +89,7 @@ settings = [
             },
             {
                 "id": "polyphon",
-                "value": "Polyphon",
+                "value": "Polyphonie",
                 "label": "Polyphon",
                 "checked": False,
             },

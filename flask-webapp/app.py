@@ -1,3 +1,13 @@
+# Disable tensorflow warnings
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+# 0 = all messages are logged (default behavior)
+# 1 = INFO messages are not printed
+# 2 = INFO and WARNING messages are not printed
+# 3 = INFO, WARNING, and ERROR messages are not printed
+
 from typing import Union
 
 import music21 as m21
@@ -37,20 +47,50 @@ models = {
     },
     "Transformer": {
         "Bach": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="Bach_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="Bach_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Bach_soloMelodie_transformer",
+                path="raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Bach_polyphonie_transformer",
+                path="raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
         "PinkFloyd": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="PinkFloyd_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="PinkFloyd_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="PinkFloyd_soloMelodie_transformer",
+                path="raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),  # TODO: change path
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="PinkFloyd_polyphonie_transformer",
+                path="raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),  # TODO: change path
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
         "Videospielmusik": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="Videospielmusik_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="Videospielmusik_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Videospielmusik_soloMelodie_transformer",
+                path="raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),  # TODO: change path
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Videospielmusik_polyphonie_transformer",
+                path="raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),  # TODO: change path
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
