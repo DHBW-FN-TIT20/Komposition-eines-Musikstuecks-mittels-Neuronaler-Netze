@@ -514,7 +514,7 @@ def scorearr_to_song(score_arr, sample_freq=SAMPLE_FREQ, bpm=120, instrument=m21
 def partarr_to_song(part_arr, duration, instrument=m21.instrument.Piano()):
     "convert instrument part to music21 chords"
     part = m21.stream.Part()
-    part.append(instrument)  # TODO hier kann man das Instrument mitgeben
+    part.append(instrument)
     part_append_duration_notes(part_arr, duration, part)  # notes already have duration calculated
     return part
 
