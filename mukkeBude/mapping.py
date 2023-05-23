@@ -5,6 +5,7 @@ from mukkeBude.utils import *
 BOS = "xxbos"
 PAD = "xxpad"
 EOS = "xxeos"
+UNK = "[UNK]"
 
 SEP = "xxsep"  # Used to denote end of timestep (required for polyphony). separator idx = -1 (part of notes)
 
@@ -13,7 +14,7 @@ SEP_LSTM = "/"
 REST = "r"
 SPACE = " "
 
-SPECIAL_TOKS = [BOS, PAD, EOS, WAIT_LSTM, SEP_LSTM, SPACE, REST, SEP]  # Important: SEP token must be last
+SPECIAL_TOKS = [BOS, PAD, EOS, WAIT_LSTM, SEP_LSTM, SPACE, REST, UNK, SEP]  # Important: SEP token must be last
 
 NOTE_TOKS = [f"n{i}" for i in range(NOTE_SIZE)]  # type: ignore
 DUR_TOKS = [f"d{i}" for i in range(DUR_SIZE)]  # type: ignore
