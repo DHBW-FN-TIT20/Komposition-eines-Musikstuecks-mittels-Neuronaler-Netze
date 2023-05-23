@@ -33,20 +33,50 @@ models = {
     },
     "Transformer": {
         "Bach": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="Bach_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="Bach_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Bach_soloMelodie_transformer",
+                path="../demos/raw_train_ds_mono_bach.txt",
+                min_training_seq_len=32,
+            ),
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Bach_polyphonie_transformer",
+                path="../demos/raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
         "PinkFloyd": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="PinkFloyd_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="PinkFloyd_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="PinkFloyd_soloMelodie_transformer",
+                path="../demos/raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="PinkFloyd_polyphonie_transformer",
+                path="../demos/raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
         "Videospielmusik": {
-            "SoloMelodie": MukkeBudeTransformer.load(mapping=mapping, name="Videospielmusik_soloMelodie_transformer"),
-            "Polyphonie": MukkeBudeTransformer.load(mapping=mapping, name="Videospielmusik_polyphonie_transformer"),
+            "SoloMelodie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Videospielmusik_soloMelodie_transformer",
+                path="../demos/raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
+            "Polyphonie": MukkeBudeTransformer.load(
+                mapping=mapping,
+                name="Videospielmusik_polyphonie_transformer",
+                path="../demos/raw_train_ds_poly_bach.txt",
+                min_training_seq_len=32,
+            ),
             "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
             "SeedPolyphonie": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
