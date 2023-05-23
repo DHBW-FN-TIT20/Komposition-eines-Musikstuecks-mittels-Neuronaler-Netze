@@ -1,7 +1,7 @@
 from os.path import dirname
 
 import music21 as m21
-from mukkeBude import utils as mukkeBude_utils
+
 from mukkeBude.mapping import MusicMapping
 from mukkeBude.model import MukkeBudeLSTM
 from mukkeBude.model import MukkeBudeTransformer

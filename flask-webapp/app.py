@@ -1,5 +1,6 @@
-from typing import Union
 import time
+from typing import Union
+
 import numpy as np
 from flask import Flask
 from flask import render_template
@@ -7,6 +8,7 @@ from flask import request
 from utils import *
 
 app = Flask(__name__)
+
 
 @app.route("/")
 @app.route("/<midi>")

@@ -59,9 +59,8 @@ class MukkeBudeTransformer:
         outputs = keras.layers.Dense(self.vocabulary_size)(x)
         self.model = keras.Model(inputs=inputs, outputs=outputs)
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        perplexity = keras_nlp.metrics.Perplexity(from_logits=True, mask_token_id=0)
 
-        self.model.compile(optimizer="adam", loss=loss_fn, metrics=[perplexity])
+        self.model.compile(optimizer="adam", loss=loss_fn, metrics=["accuracy"])
 
     def train(
         self,
@@ -72,8 +71,8 @@ class MukkeBudeTransformer:
         buffer_size: int = 256,
         epochs: int = 12,
         tensorboard_callback: keras.callbacks.TensorBoard = None,
-    ) -> tf.keras.callbacks.History:
-        self.__loadDataset(
+    ) -> None:
+        self.loadDataset(
             path=path,
             min_training_seq_len=min_training_seq_len,
             seq_len=seq_len,
@@ -89,22 +88,25 @@ class MukkeBudeTransformer:
         if tensorboard_callback is not None and not isinstance(tensorboard_callback, keras.callbacks.TensorBoard):
             raise TypeError("Only TensorBoard callback allowed")
 
-        args = {}
+        kwargs = {}
         if tensorboard_callback is not None:
-            args["callbacks"] = [tensorboard_callback]
+            kwargs["callbacks"] = [tensorboard_callback]
 
-        return self.model.fit(self.train_ds, verbose=2, epochs=epochs, **args)
+        self.model.fit(self.train_ds, verbose=2, epochs=epochs, **kwargs)
 
-    def generate(self, start_seed: str, max_length: int = 128, probability=0.5) -> str:
-        # Unpadded bos token.
-        # TODO consider using a sequence of start_seed (split by ' ' and tokenize every element)
+    def generate(self, start_seed: str, max_length: int = 128, probability=0.75) -> str:
+        """Generate a new song based on the given start seed.
+
+        :param start_seed: Needed start seed for the generation
+        :param max_length: Max length of the generated song (1 means one note), defaults to 128
+        :param probability: How fixed choose the note with the highest probability, defaults to 0.75
+        :return: Generated song
+        """
         prompts = start_seed.split(" ")
         prompt_ids = []
         for prompt in prompts:
             prompt_ids.append(self.tokenizer.token_to_id(prompt))
         prompt_tokens = tf.convert_to_tensor(prompt_ids)
-        # prompt_tokens = tf.convert_to_tensor([self.tokenizer.token_to_id(start_seed)])
-        print(f"prompt_tokens: {prompt_tokens}")
 
         output_tokens = keras_nlp.utils.top_p_search(
             self.token_logits_fn,
@@ -113,7 +115,7 @@ class MukkeBudeTransformer:
             p=probability,
             from_logits=True,
         )
-        txt = self.tokenizer.detokenize(output_tokens)
+        txt = self.tokenizer.detokenize(output_tokens).numpy().decode("utf-8")
         return txt
 
     def token_logits_fn(self, inputs):
@@ -132,18 +134,31 @@ class MukkeBudeTransformer:
         return path
 
     @staticmethod
-    def load(mapping: MusicMapping, name: str) -> "MukkeBudeTransformer":
+    def load(
+        mapping: MusicMapping,
+        name: str,
+        path: os.PathLike,
+        min_training_seq_len: int = 64,
+        seq_len: int = 128,
+        batch_size: int = 64,
+        buffer_size: int = 256,
+        special_tokens: list = ["xxpad", "[UNK]", "xxbos", "xxeos", "xxsep"],
+    ) -> "MukkeBudeTransformer":
         """Load the model with the given name from the `model/preTrainedModels` folder.
+        You need to pass the same values as you did when training the model.
 
         :param mapping: Dictionary mapping unique symbols to integers
         :param name: Name of the model
+        :param path: Path to the training data. This is needed to load the tokenizer
         :return: Loaded model
         """
-        path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
-        model = keras.models.load_model(path)
-        return MukkeBudeTransformer(mapping=mapping, model=model)
+        model_path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
+        model = keras.models.load_model(model_path)
+        tranformer = MukkeBudeTransformer(mapping=mapping, model=model)
+        tranformer.loadDataset(path, min_training_seq_len, seq_len, batch_size, buffer_size, special_tokens)
+        return tranformer
 
-    def __loadDataset(
+    def loadDataset(
         self,
         path: os.PathLike,
         min_training_seq_len: int = 16,

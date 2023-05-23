@@ -22,6 +22,9 @@ jobs:
     - name: Install Poetry
       uses: abatilo/actions-poetry@v2
 
+    - name: Update lock file
+      run: poetry lock
+
     - name: Export requirements.txt
       run: poetry export -f requirements.txt --without-hashes --output requirements.txt
 
