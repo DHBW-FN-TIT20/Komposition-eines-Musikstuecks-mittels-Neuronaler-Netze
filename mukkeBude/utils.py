@@ -157,7 +157,7 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
     return transposed_songs
 
 
-def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
+def encode_songs_old(songs: List[m21.stream.Score], flat = True) -> List[List[str]]:
     """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param songs: list of songs
@@ -172,22 +172,40 @@ def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
 
         # Save the song in MIDI format
         # A event is a note or a rest
-        for event in song.flat.notesAndRests:
-            # Notes
-            if isinstance(event, m21.note.Note):
-                symbol = "n" + str(event.pitch.midi)
-            # Rests
-            elif isinstance(event, m21.note.Rest):
-                symbol = "r"
+        if flat:
+            for event in song.flat.notesAndRests:
+                # Notes
+                if isinstance(event, m21.note.Note):
+                    symbol = "n" + str(event.pitch.midi)
+                # Rests
+                elif isinstance(event, m21.note.Rest):
+                    symbol = "r"
 
-            # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
-            # The note itself and 3 "_" symbols
-            steps = int(event.duration.quarterLength / time_step)
-            for step in range(steps):
-                if step == 0:
-                    encoded_song.append(symbol)
-                else:
-                    encoded_song.append("_")
+                # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
+                # The note itself and 3 "_" symbols
+                steps = int(event.duration.quarterLength / time_step)
+                for step in range(steps):
+                    if step == 0:
+                        encoded_song.append(symbol)
+                    else:
+                        encoded_song.append("_")
+        else:           
+            for event in song.getElementsByClass(m21.stream.Part)[0].flat.notesAndRests:
+                # Notes
+                if isinstance(event, m21.note.Note):
+                    symbol = "n" + str(event.pitch.midi)
+                # Rests
+                elif isinstance(event, m21.note.Rest):
+                    symbol = "r"
+
+                # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
+                # The note itself and 3 "_" symbols
+                steps = int(event.duration.quarterLength / time_step)
+                for step in range(steps):
+                    if step == 0:
+                        encoded_song.append(symbol)
+                    else:
+                        encoded_song.append("_")
 
         # cast the encoded song to string
         encoded_songs.append(encoded_song)
@@ -195,10 +213,11 @@ def encode_songs_old(songs: List[m21.stream.Score]) -> List[List[str]]:
     return encoded_songs
 
 
-def decode_songs_old(song: str) -> m21.stream.Stream:
+def decode_songs_old(song: str, bpm : int = 120) -> m21.stream.Stream:
     """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param song: the encoded song
+    :param bmp: the bpm of the song
     :return: the decoded song
     """
     song_splitted = song.split(" ")
@@ -207,6 +226,7 @@ def decode_songs_old(song: str) -> m21.stream.Stream:
     song_splitted = [symbol[1:] if symbol[0] == "n" else symbol for symbol in song_splitted]
 
     m21_stream: m21.stream.Stream = m21.stream.Stream()
+    m21_stream.append(m21.tempo.MetronomeMark(number=bpm))
     start_symbol = None
     step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
     step_duration = 0.25  # The duration of one step in quarter length
@@ -262,6 +282,7 @@ def load_dataset_lstm(
     mapping: Any,
     raw_songs=False,
     corpus=True,
+    flat = True
 ) -> Union[List[int], List[str]]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
 
@@ -300,7 +321,7 @@ def load_dataset_lstm(
     songs = transpose_songs(songs)
 
     # Encode the songs
-    encoded_songs = encode_songs_old(songs)
+    encoded_songs = encode_songs_old(songs, flat = flat)
 
     if raw_songs:
         tmp_encoded_songs: List[str] = []
