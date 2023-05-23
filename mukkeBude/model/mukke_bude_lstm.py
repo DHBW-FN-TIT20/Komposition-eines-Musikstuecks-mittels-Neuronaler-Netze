@@ -143,7 +143,7 @@ class MukkeBudeLSTM:
                 break
 
             # Update the output melody
-            output_melody.extend(output_symbol)
+            output_melody.append(output_symbol)
 
         return " ".join(output_melody)
 
