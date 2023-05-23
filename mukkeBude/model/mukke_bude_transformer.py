@@ -185,23 +185,24 @@ class MukkeBudeTransformer:
         )
 
         # Train tokenizer vocabulary
-        self.vocab = keras_nlp.tokenizers.compute_word_piece_vocabulary(
-            self.raw_train_ds,
-            vocabulary_size=self.vocabulary_size,
-            lowercase=True,
-            reserved_tokens=special_tokens,
-            # reserved_tokens=[
-            #     "[PAD]",  # padding token used to pad sequences to the same length /
-            #     "[UNK]",  # out-of-vocabulary (OOV) sub-words / unknown words are replaced with this token
-            #     "[BOS]",  # stands for beginning of sentence, but here technically it is a token representing the beginning of each line of training data
-            # ],
-        )
+        # self.vocab = keras_nlp.tokenizers.compute_word_piece_vocabulary(
+        #     self.raw_train_ds,
+        #     vocabulary_size=self.vocabulary_size,
+        #     lowercase=True,
+        #     reserved_tokens=special_tokens,
+        #     split=False,
+        #     # reserved_tokens=[
+        #     #     "[PAD]",  # padding token used to pad sequences to the same length /
+        #     #     "[UNK]",  # out-of-vocabulary (OOV) sub-words / unknown words are replaced with this token
+        #     #     "[BOS]",  # stands for beginning of sentence, but here technically it is a token representing the beginning of each line of training data
+        #     # ],
+        # )
 
         # Load tokenizer
         # WordPieceTokenizer is an efficient implementation of the WordPiece algorithm used by BERT and other models.
         # It will strip, lower-case and do other irreversible preprocessing operations
         self.tokenizer = keras_nlp.tokenizers.WordPieceTokenizer(
-            vocabulary=self.vocab,
+            vocabulary=self.mapping.itos,
             sequence_length=seq_len,
             lowercase=True,
         )
