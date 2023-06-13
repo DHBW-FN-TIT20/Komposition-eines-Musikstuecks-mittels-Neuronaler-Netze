@@ -158,7 +158,7 @@ class MukkeBudeGRU:
         return path
 
     @staticmethod
-    def load(mapping: MusicMapping, name: str) -> "MukkeBudeLSTM":
+    def load(mapping: MusicMapping, name: str) -> "MukkeBudeGRU":
         """Load the model with the given name from the `model/preTrainedModels` folder.
 
         :param mapping: Dictionary mapping unique symbols to integers
@@ -167,7 +167,7 @@ class MukkeBudeGRU:
         """
         path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
         model = keras.models.load_model(path)
-        return MukkeBudeLSTM(mapping=mapping, model=model)
+        return MukkeBudeGRU(mapping=mapping, model=model)
 
     def __create_training_data(self, integer_sequence: List[int]) -> Tuple[Any, np.ndarray]:
         """Create the training data

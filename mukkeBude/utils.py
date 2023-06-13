@@ -157,7 +157,7 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
     return transposed_songs
 
 
-def encode_songs_old(songs: List[m21.stream.Score], flat = True) -> List[List[str]]:
+def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]]:
     """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param songs: list of songs
@@ -172,6 +172,7 @@ def encode_songs_old(songs: List[m21.stream.Score], flat = True) -> List[List[st
 
         # Save the song in MIDI format
         # A event is a note or a rest
+        # If True use all notes and rests (notes at the same time played are now played after each other)
         if flat:
             for event in song.flat.notesAndRests:
                 # Notes
@@ -189,7 +190,8 @@ def encode_songs_old(songs: List[m21.stream.Score], flat = True) -> List[List[st
                         encoded_song.append(symbol)
                     else:
                         encoded_song.append("_")
-        else:           
+        # If False use only the notes and rests in the first instrument
+        else:
             for event in song.getElementsByClass(m21.stream.Part)[0].flat.notesAndRests:
                 # Notes
                 if isinstance(event, m21.note.Note):
@@ -213,7 +215,7 @@ def encode_songs_old(songs: List[m21.stream.Score], flat = True) -> List[List[st
     return encoded_songs
 
 
-def decode_songs_old(song: str, bpm : int = 120) -> m21.stream.Stream:
+def decode_songs_old(song: str, bpm: int = 120) -> m21.stream.Stream:
     """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param song: the encoded song
@@ -282,7 +284,7 @@ def load_dataset_lstm(
     mapping: Any,
     raw_songs=False,
     corpus=True,
-    flat = True
+    flat=True,
 ) -> Union[List[int], List[str]]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
 
@@ -321,7 +323,7 @@ def load_dataset_lstm(
     songs = transpose_songs(songs)
 
     # Encode the songs
-    encoded_songs = encode_songs_old(songs, flat = flat)
+    encoded_songs = encode_songs_old(songs, flat=flat)
 
     if raw_songs:
         tmp_encoded_songs: List[str] = []
