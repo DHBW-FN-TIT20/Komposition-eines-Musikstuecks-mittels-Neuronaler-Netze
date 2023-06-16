@@ -141,11 +141,11 @@ dmypy.json
 .vscode
 mukkeBude/runs
 mukkeBude/data.json
-*.midi
+*.mid*
 *.musicxml
 mapping.txt
 logs
 
 # Exclude Folder with example music data
 !mukkeBude/songs
-!flask-webapp/static/**
+!flask-webapp/static/examples**

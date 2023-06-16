@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import keras_nlp
 import tensorflow as tf
@@ -137,7 +138,7 @@ class MukkeBudeTransformer:
     def load(
         mapping: MusicMapping,
         name: str,
-        path: os.PathLike,
+        path: Union[os.PathLike, str],
         min_training_seq_len: int = 64,
         seq_len: int = 128,
         batch_size: int = 64,
@@ -160,7 +161,7 @@ class MukkeBudeTransformer:
 
     def loadDataset(
         self,
-        path: os.PathLike,
+        path: Union[os.PathLike, str],
         min_training_seq_len: int = 16,
         seq_len: int = 32,
         batch_size: int = 16,
