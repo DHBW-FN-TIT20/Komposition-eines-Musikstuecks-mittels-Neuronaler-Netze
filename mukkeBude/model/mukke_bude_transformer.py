@@ -21,7 +21,9 @@ VOCAB_SIZE = 5000  # Limits parameters in model.
 NUM_TOKENS_TO_GENERATE = 80
 
 
-# TODO add load and save trained model, add output of diagrams during training (for documentation)
+# TODO add load and save trained model
+
+
 class MukkeBudeTransformer:
     def __init__(self, mapping: MusicMapping, model: keras.Model = None) -> None:
         """Transformer model for MukkeBude
@@ -73,6 +75,17 @@ class MukkeBudeTransformer:
         epochs: int = 12,
         tensorboard_callback: keras.callbacks.TensorBoard = None,
     ) -> None:
+        """Train the model
+
+        :param path: Path to the training data
+        :param min_training_seq_len: Each line in the file with less than `min_training_seq_len` will be removed, defaults to 64
+        :param seq_len: Length that each line got splittet for the model, defaults to 128
+        :param batch_size: How many lines to give the model (does not batch the line), defaults to 64
+        :param buffer_size: Buffer size for shuffel each lines in the dataset, defaults to 256
+        :param epochs: Number of epochs to train, defaults to 12
+        :param tensorboard_callback: There you can pass a TensorBoard callback, defaults to None
+        :raises TypeError: If the given callback is not a TensorBoard callback
+        """
         self.loadDataset(
             path=path,
             min_training_seq_len=min_training_seq_len,
@@ -98,7 +111,7 @@ class MukkeBudeTransformer:
     def generate(self, start_seed: str, max_length: int = 128, probability=0.75) -> str:
         """Generate a new song based on the given start seed.
 
-        :param start_seed: Needed start seed for the generation
+        :param start_seed: Starting string with start symbols and notes
         :param max_length: Max length of the generated song (1 means one note), defaults to 128
         :param probability: How fixed choose the note with the highest probability, defaults to 0.75
         :return: Generated song
@@ -146,7 +159,7 @@ class MukkeBudeTransformer:
         special_tokens: list = ["xxpad", "[UNK]", "xxbos", "xxeos", "xxsep"],
     ) -> "MukkeBudeTransformer":
         """Load the model with the given name from the `model/preTrainedModels` folder.
-        You need to pass the same values as you did when training the model.
+        You need to pass the same values as you did when training the model. Defaults like the `train` function.
 
         :param mapping: Dictionary mapping unique symbols to integers
         :param name: Name of the model
@@ -171,8 +184,8 @@ class MukkeBudeTransformer:
         """load the dataset for the model. Each line in the dataset file is a training example.
 
         :param path: Path to the dataset
-        :param min_training_seq_len: Each line in the file with less than `min_training_seq_len` will be removed, defaults to 64
-        :param seq_len: Length that each line got splittet for the model, defaults to 128
+        :param min_training_seq_len: Each line in the file with less than `min_training_seq_len` will be removed, defaults to 16
+        :param seq_len: Length that each line got splittet for the model, defaults to 32
         :param batch_size: How many lines to give the model (does not batch the line), defaults to 16
         :param buffer_size: Buffer size for shuffel each lines in the dataset, defaults to 256
         :param special_tokens: Tokens that need to be included in the vocabulary. First Token need to be the default padding token, defaults to ["xxpad", "[UNK]", "xxbos", "xxeos", "xxsep"]
@@ -184,20 +197,6 @@ class MukkeBudeTransformer:
             .batch(batch_size)
             .shuffle(buffer_size=buffer_size)
         )
-
-        # Train tokenizer vocabulary
-        # self.vocab = keras_nlp.tokenizers.compute_word_piece_vocabulary(
-        #     self.raw_train_ds,
-        #     vocabulary_size=self.vocabulary_size,
-        #     lowercase=True,
-        #     reserved_tokens=special_tokens,
-        #     split=False,
-        #     # reserved_tokens=[
-        #     #     "[PAD]",  # padding token used to pad sequences to the same length /
-        #     #     "[UNK]",  # out-of-vocabulary (OOV) sub-words / unknown words are replaced with this token
-        #     #     "[BOS]",  # stands for beginning of sentence, but here technically it is a token representing the beginning of each line of training data
-        #     # ],
-        # )
 
         # Load tokenizer
         # WordPieceTokenizer is an efficient implementation of the WordPiece algorithm used by BERT and other models.
@@ -221,6 +220,7 @@ class MukkeBudeTransformer:
         return features, labels
 
     def __str__(self) -> str:
+        """Print the model summary."""
         text = []
         self.model.summary(print_fn=lambda x: text.append(x))
         return "\n".join(text)

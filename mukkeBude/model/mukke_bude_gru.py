@@ -1,3 +1,6 @@
+"""
+Main file for the MukkeBudeGRU class. This class is used to create a GRU model for the MukkeBude project.
+"""
 import os
 from typing import Any
 from typing import List
@@ -26,7 +29,7 @@ class MukkeBudeGRU:
         :param hidden_layer: Number of hidden Layers, defaults to [256]
         :param loss: Loss function of the GRU, defaults to "sparse_categorical_crossentropy"
         :param activation: Activation function of the GRU, defaults to "softmax"
-        :param optimizer: optemizer of the GRU, defaults to keras.optimizers.Adam(learning_rate= 0.001)
+        :param optimizer: optemizer of the GRU, defaults to keras.optimizers.Adam(learning_rate=0.001)
         :param sequence_length: Length of the sequences, defaults to 64
         :param model: Pretrained model, defaults to None. If a model is provided, the other parameters are ignored
         """
@@ -68,12 +71,12 @@ class MukkeBudeGRU:
         batch_size: int = 64,
         tensorboard_callback: keras.callbacks.TensorBoard = None,
     ) -> None:
-        """Train the LSTM model
+        """Train the GRU model
 
         :param dataset: Training dataset
-        :param epochs: Number of epochs to train, defaults to 10
+        :param epochs: Number of epochs to train, defaults to 50
         :param batch_size: Size of the batches, defaults to 64
-        :param tensorboard_callback: There you can pass a TensorBoard callback, defaults to None
+        :param tensorboard_callback: There you can pass a TensorBoard callback for logging, defaults to None
         """
         inputs, targets = self.__create_training_data(dataset)
 
@@ -88,17 +91,18 @@ class MukkeBudeGRU:
         start_seed: str,
         max_length: int = 128,
         max_sequence_length: int = 64,
-        temperature=0.8,
+        temperature: float = 0.8,
     ) -> str:
         """Generate a new song
 
-        :param start_seed: Starting string with start symbols and notes
+        :param start_seed: Starting string with start symbols and notes.
         :param max_length: Maximum length of the generated song, defaults to 128
+        :param max_sequence_length: Maximum length of each sequence for the input of the next symbol, defaults to 64
         :param temperature: temperature of the next character choice, defaults to 0.8
         :return: Generated song
         """
 
-        # map the ssed to integers
+        # map the sed to integers
         seed = self.mapping.numericalize(start_seed.split(" "))
 
         # Start the melody generation
@@ -161,8 +165,8 @@ class MukkeBudeGRU:
     def load(mapping: MusicMapping, name: str) -> "MukkeBudeGRU":
         """Load the model with the given name from the `model/preTrainedModels` folder.
 
-        :param mapping: Dictionary mapping unique symbols to integers
-        :param name: Name of the model
+        :param mapping: Dictionary mapping. Unique symbols to integers
+        :param name: Name of the model (without the .h5 extension)
         :return: Loaded model
         """
         path = os.path.join(os.path.dirname(__file__), "preTrainedModels", f"{name}.h5")
@@ -194,6 +198,7 @@ class MukkeBudeGRU:
         return one_hot_inputs, np_targets
 
     def __str__(self) -> str:
+        """Print the model summary"""
         text = []
         self.model.summary(print_fn=lambda x: text.append(x))
         return "\n".join(text)

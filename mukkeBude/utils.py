@@ -1,10 +1,7 @@
-import json
 import os
 from enum import Enum
 from itertools import groupby
-from pathlib import Path
 from typing import Any
-from typing import Dict
 from typing import List
 from typing import Union
 
@@ -25,32 +22,12 @@ ACCEPTABLE_DURATIONS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2
 SEQType = Enum("SEQType", "Mask, Sentence, Melody, Chords, Empty")
 
 
-def create_train_data_json(encoded_song: np.ndarray, sequence_length=32) -> List[Dict]:
-    num_sequences = len(encoded_song) - sequence_length
-
-    data = []
-
-    for i in range(num_sequences):
-        input = str(encoded_song[i : i + sequence_length])
-        target = str(encoded_song[i + sequence_length])
-
-        data.append({"input": input, "labels": target})
-
-    path = Path("data.json")
-    path.unlink(missing_ok=True)
-    with path.open("w") as f:
-        json.dump(data, f, indent=None)
-
-    return data
-
-
 def create_train_data(encoded_songs: List[str], path: os.PathLike) -> None:
     """Create training data from encoded songs. Each song is written to a new line.
-    xxbos and xxpad tokens are removed.
+    xxbos and xxpad tokens are removed. This is used for transformer models.
 
-    Args:
-        encoded_songs (List[str]): list of encoded songs
-        path (os.PathLike): path to file
+    :param encoded_songs: list of encoded songs
+    :param path: path to save the train data
     """
     # Check if file exists, if so, delete it
     if os.path.exists(path):
@@ -65,11 +42,8 @@ def create_train_data(encoded_songs: List[str], path: os.PathLike) -> None:
 def read_single(file_path: os.PathLike) -> Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]:
     """Convert file of a song to music21.stream.Score. Accepted file types are .mid, .krn, .abc, .mxl, .musicxml
 
-    Args:
-        file_path (str): the path to file
-
-    Returns:
-        m21.stream.Score: the converted song
+    :param file_path: path to file
+    :return: the converted song
     """
     return m21.converter.parse(file_path)  # type: ignore
 
@@ -77,9 +51,8 @@ def read_single(file_path: os.PathLike) -> Union[m21.stream.Score, m21.stream.Pa
 def write_midi(song: m21.stream.Score, output_path: str = "test.mid") -> None:
     """Export music21.stream.Score to midi format.
 
-    Args:
-        song (m21.stream.Score): the song
-        output_path (str, optional): filename with path. Defaults to "test.mid".
+    :param song: the song
+    :param output_path: filename with path, defaults to "test.mid"
     """
     song.write("midi", fp=output_path)
 
@@ -87,21 +60,18 @@ def write_midi(song: m21.stream.Score, output_path: str = "test.mid") -> None:
 def write_musicxml(song: m21.stream.Score, output_path: str = "test.musicxml") -> None:
     """Export music21.stream.Score to musicxml format
 
-    Args:
-        song (m21.stream.Score): the song
-        output_path (str, optional): filename with path. Defaults to "test.musicxml".
+    :param song: the song
+    :param output_path: filename with path, defaults to "test.musicxml"
     """
     song.write("musicxml", fp=output_path)
 
 
 def read_single_from_corpus(corpus_path: str) -> m21.stream.Score:
-    """Convert file in music21 corpus to music21.stream.Score. Paths to corpus files can be retrieved using e.g. paths = music21.corpus.getComposer('bach')
+    """Convert file in music21 corpus to music21.stream.Score. Paths to corpus files can be retrieved using
+    e.g. paths = music21.corpus.getComposer('bach')
 
-    Args:
-        corpus_path (str): the path to the file in corpus
-
-    Returns:
-        m21.stream.Score: the converted song
+    :param corpus_path: the path to the file in corpus
+    :return: the converted song
     """
     return m21.corpus.parse(corpus_path)
 
@@ -109,11 +79,8 @@ def read_single_from_corpus(corpus_path: str) -> m21.stream.Score:
 def read_all(files: List[os.PathLike]) -> List[Union[m21.stream.Score, m21.stream.Part, m21.stream.Opus]]:
     """Converts all files to List[music21.stream.Score]. Accepted file types are .mid, .midi, .krn, .abc, .mxl, .musicxml
 
-    Args:
-        files (os.PathLike): path to files
-
-    Returns:
-        List[m21.stream.Score]: list of converted songs
+    :param files: path to files
+    :return: list of converted songs
     """
     songs = []
     for file in files:
@@ -123,7 +90,7 @@ def read_all(files: List[os.PathLike]) -> List[Union[m21.stream.Score, m21.strea
 
 
 def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
-    """Transpose songs to c major or a minor
+    """Transpose songs to c major or a minor. This reduces the numbers of notes for training.
 
     :param songs: list of songs
     :return: list of transposed songs
@@ -158,7 +125,7 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
 
 
 def transpose_song_to(song: m21.stream.Score, pitch: str) -> m21.stream.Score:
-    """Transpose the song to the given pitch
+    """Transpose the song to the given pitch.
 
     :param song: song
     :param pitch: pitch to transpose to
@@ -177,9 +144,10 @@ def transpose_song_to(song: m21.stream.Score, pitch: str) -> m21.stream.Score:
 
 
 def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]]:
-    """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
+    """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an `_`.
 
     :param songs: list of songs
+    :param flat: if True, use all notes and rests (notes at the same time played are now played after each other), defaults to True
     :return: list of encoded songs
     """
     encoded_songs = []
@@ -238,10 +206,11 @@ def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]
 
 
 def decode_songs_old(song: str, bpm: int = 120, instrument=m21.instrument.Piano()) -> m21.stream.Stream:
-    """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
+    """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an `_`.
 
     :param song: the encoded song
-    :param bmp: the bpm of the song
+    :param bmp: the beats per minute of the song, default is 120
+    :param instrument: the instrument to play, default is piano
     :return: the decoded song
     """
     song_splitted = song.split(" ")
@@ -305,18 +274,19 @@ def replace_special_tokens(
 def load_dataset_lstm(
     paths: List[os.PathLike],
     sequence_length: int,
-    mapping: Any,
+    mapping,
     raw_songs=False,
     corpus=True,
     flat=True,
 ) -> Union[List[int], List[str]]:
     """Create one big list with all songs in it. It is decoded like "n60 _ _ _" to the integer values of the mapping.
+    Refer to the `mukkeBude.mapping` module for more information.
 
     :param paths: Path to the songs
     :param sequence_length: length of the sequences
     :param mapping: the mapping of the dataset
-    :param raw_songs: if True, the songs will not merged in one big list and in string format
-    :param corpus: if True, the songs will be read from the corpus. Else you need to set False
+    :param raw_songs: if True, the songs will not merged in one big list and in string format, default is False
+    :param corpus: if True, the songs will be read from the corpus. Else you need to set False, default is True
     :return: Decoded songs in a list
     """
     songs: List[m21.stream.Score] = []
@@ -365,31 +335,54 @@ def load_dataset_lstm(
     return dataset
 
 
-def to_polyphonic_encoding(song: m21.stream.Score, mapping):
+def to_polyphonic_encoding(song: m21.stream.Score, mapping) -> Union[List[int], np.ndarray]:
+    """Encode the song to the polyphonic encoding. The song will be encoded like "n60 d4 n65 d2 xxsep d3".
+
+    :param song: the song to encode
+    :param mapping: the mapping for number to char
+    :return: Encoded song
+    """
     score_arr = song_to_scorearr(song)
     encoded_arr = scorearr_to_encodedarr(score_arr)
     return encodedarr_to_indexencoding(encoded_arr, mapping)
 
 
 def from_polyphonic_encoding(
-    index_arr,
+    index_arr: List[int],
     mapping,
     bpm: int = 120,
     instrument=m21.instrument.Piano(),
     validate=True,
 ) -> m21.stream.Score:
+    """Decode the song from the polyphonic encoding. It reverse the encoding of `to_polyphonic_encoding`.
+
+    :param index_arr: the song to decode
+    :param mapping: the mapping for number to char
+    :param bpm: Beats per minute to create the song, defaults to 120
+    :param instrument: Which instrument to play the song, defaults to m21.instrument.Piano()
+    :param validate: Validate each integer and the order of the values, defaults to True
+    :return: Decoded song
+    """
     encoded_arr = indexarr_to_encodedarr(index_arr, mapping, validate=validate)
     score_arr = encodedarr_to_scorearr(np.array(encoded_arr))
     return scorearr_to_song(score_arr, bpm=bpm, instrument=instrument)
 
 
 def song_to_scorearr(song: m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SAMPLE_FREQ, max_note_dur=MAX_NOTE_DUR):
+    """Convert a song to a score array.
+
+    :param song: the song to convert
+    :param note_size: the size of the note
+    :param sample_freq: the sample frequency
+    :param max_note_dur: the maximum note duration
+    :return: the score array
+    """
     highest_time = max(
         song.flat.getElementsByClass("Note").highestTime,
         song.flat.getElementsByClass("Chord").highestTime,
     )
     maxTimeStep = round(highest_time * sample_freq) + 1
-    score_arr = np.zeros((maxTimeStep, len(song.parts), NOTE_SIZE))
+    score_arr = np.zeros((maxTimeStep, len(song.parts), note_size))
 
     def note_data(pitch, note):
         return (
@@ -420,15 +413,13 @@ def song_to_scorearr(song: m21.stream.Score, note_size=NOTE_SIZE, sample_freq=SA
     return score_arr
 
 
-def scorearr_to_encodedarr(chordarr, skip_last_rest=True):
+def scorearr_to_encodedarr(chordarr, skip_last_rest=True) -> np.ndarray:
     """Generate numpy array with [note,duration]
 
-    Args:
-        chordarr (_type_): one hot encoded song
-        skip_last_rest (bool, optional): _description_. Defaults to True.
+    :param chordarr: the score array
+    :param skip_last_rest: skip the last rest, defaults to True
 
-    Returns:
-        _type_: np.array
+    :return: the encoded array
     """
     result = []
     wait_count = 0
@@ -448,6 +439,14 @@ def scorearr_to_encodedarr(chordarr, skip_last_rest=True):
 
 
 def encode_timestep(timestep, note_range=PIANO_RANGE, enc_type=None):
+    """Encode a timestep to the polyphonic encoding.
+
+    :param timestep: the timestep to encode
+    :param note_range: the note range to encode
+    :param enc_type: the encoding type
+    :return: the encoded timestep
+    """
+
     # inst x pitch
     notes = []
     for i, n in zip(*timestep.nonzero()):

@@ -145,6 +145,7 @@ mukkeBude/data.json
 *.musicxml
 mapping.txt
 logs
+docs
 
 # Exclude Folder with example music data
 !mukkeBude/songs
