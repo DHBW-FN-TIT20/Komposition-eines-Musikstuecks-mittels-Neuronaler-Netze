@@ -215,7 +215,7 @@ def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]
     return encoded_songs
 
 
-def decode_songs_old(song: str, bpm: int = 120) -> m21.stream.Stream:
+def decode_songs_old(song: str, bpm: int = 120, instrument=m21.instrument.Piano()) -> m21.stream.Stream:
     """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param song: the encoded song
@@ -229,6 +229,8 @@ def decode_songs_old(song: str, bpm: int = 120) -> m21.stream.Stream:
 
     m21_stream: m21.stream.Stream = m21.stream.Stream()
     m21_stream.append(m21.tempo.MetronomeMark(number=bpm))
+    m21_stream.append(instrument)
+
     start_symbol = None
     step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
     step_duration = 0.25  # The duration of one step in quarter length
