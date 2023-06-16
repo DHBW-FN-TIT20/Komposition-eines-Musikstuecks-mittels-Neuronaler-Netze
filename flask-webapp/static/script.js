@@ -5,45 +5,18 @@ const helpButton = $('#toggleHelp');
 const body = $('body');
 const sideboardButton = $('#toggle-sideboard');
 
-let abcString = '';
-let xmlhttp = new XMLHttpRequest();
-const abcFileLocation = $('#abc-file-location').attr('abcfilelocation');
-xmlhttp.open('GET', abcFileLocation, false);
-xmlhttp.onreadystatechange = function(){
-    if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
-        abcString = xmlhttp.responseText;
-    }
-};
-xmlhttp.send();
-
-abcString = abcString ? abcString : 'X:1\nT:Keine passende ABC-Datei gefunden';
-abcString = abcString.split(/\r?\n/) // Split input text into an array of lines
-    .filter(line => line.trim() !== '') // Filter out lines that are empty or contain only whitespace
-    .join('\n'); // Join line array into a string
-
-let visualOptions = {
-    format: {
-        titlefont: 'Inconsolata bold 24',
-        subtitlefont: 'Inconsolata bold',
-        composerfont: 'Inconsolata bold',
-        partsfont: 'Inconsolata bold',
-        tempofont: 'Inconsolata bold',
-        gchordfont: 'Inconsolata bold',
-        annotationfont: 'Inconsolata bold',
-        infofont: 'Inconsolata bold',
-        textfont: 'Inconsolata bold',
-        vocalfont: 'Inconsolata bold',
-        wordsfont: 'Inconsolata bold'
-    },
-    // responsive: 'resize',
-    staffwidth: 740,
-    wrap: {
-        minSpacing: 1.5,
-        maxSpacing: 2.5,
-        preferredMeasuresPerLine: 4,
-    }
-};
-ABCJS.renderAbc('abcjs', abcString, visualOptions);
+const mxlFileLocation = $('#mxl-file-location').attr('mxlfilelocation');
+var osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay('mxl-display', {
+    alignRests: 2,
+    autoResize: false,
+    backend: 'canvas',
+    drawingParameters: 'compacttight',
+    drawMeasureNumbers: false,
+});
+var loadPromise = osmd.load(mxlFileLocation);
+loadPromise.then(() => {
+    osmd.render();
+});
 
 let toggleInfo = () => {
     if (links.attr('isHidden') == 'True') {
@@ -99,7 +72,8 @@ let generate_new_song = () => {
         music: $(`input[type='radio'][name='music']:checked`).val(),
         coding: $(`input[type='radio'][name='coding']:checked`).val(),
         instrument: $(`input[type='radio'][name='instrument']:checked`).val(),
-        bpm: $(`input[type='radio'][name='bpm']:checked`).val()
+        bpm: $(`input[type='radio'][name='bpm']:checked`).val(),
+        key: $(`input[type='radio'][name='key']:checked`).val()
     };
 
     let url = '/';

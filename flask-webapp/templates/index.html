@@ -61,17 +61,19 @@
                     {% set header = 'Beispiel: ' + placeholder %}
                 {% endif %}
             {% endif %}
-            <div id="song-header" class="bottom-16 min-790">
+            <div id="song-header" class="bottom-16">
                 {% if downloadable %}
                     <button id="download-current-midi" class="h-34"><a href="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" target="_blank">Diesen Song herunterladen</a></button>
                 {% endif %}
-                <h2 id="abc-file-location" class="flex-center h-34" abcfilelocation="{{ url_for('static', filename='abc') }}/{{ midi|e }}.abc">{{ header }}</h2>
+                <h2 id="mxl-file-location" class="flex-center h-34" mxlfilelocation="{{ url_for('static', filename='mxl') }}/{{ midi|e }}.musicxml">{{ header }}</h2>
             </div>
-            <div class="min-790">
+            <div>
                 <midi-player id="midi-player" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid" sound-font visualizer="#piano-roll-visualizer"></midi-player>
                 <midi-visualizer id="piano-roll-visualizer" type="piano-roll" src="{{ url_for('static', filename='midi') }}/{{ midi|e }}.mid"></midi-visualizer>
             </div>
-            <div id="abcjs" class="center bottom-16"></div>
+            <div id="mxl-container">
+                <div id="mxl-display" class="center bottom-16"></div>
+            </div>
         </div>
 
         <button id="toggle-sideboard" onclick="toggleSideboard()">&#706; close</button>
@@ -112,10 +114,10 @@
         </div>
     </div>
     <button id="toggleInfo" class="modal-button" onclick="toggleInfo()">i</button>
-</body>
 
-<script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
-<script src="{{ url_for('static', filename='jquery-3.6.4.min.js') }}"></script>
-<script src="{{ url_for('static', filename='abcjs.min.js') }}"></script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script>
+    <script src="{{ url_for('static', filename='jquery-3.6.4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='opensheetmusicdisplay.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
 </html>
