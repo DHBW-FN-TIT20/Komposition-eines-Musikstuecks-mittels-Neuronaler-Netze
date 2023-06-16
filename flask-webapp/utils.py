@@ -18,10 +18,8 @@ models = {
             "SeedPolyphon": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
         },
         "PinkFloyd": {
-            "SoloMelodie": MukkeBudeLSTM.load(mapping=mapping, name="PinkFloyd_soloMelodie_lstm"),
             "Polyphon": MukkeBudeLSTM.load(mapping=mapping, name="PinkFloyd_polyphonie_lstm"),
-            "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
-            "SeedPolyphon": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
+            "SeedPolyphon": "xxbos n69 d1 xxsep d1 n74 d1 n69 d1 xxsep d1 n78 d16 n74 d16 n69 d16 xxsep d22 n78 d6 n74 d6 n69 d6 xxsep d6 n79 d4 n71 d4 xxsep d4 n78 d4 n69 d4 xxsep d4 n76 d2 n69 d2 xxsep d2 n76 d10 n69 d10 xxsep d10 n74 d4 n69 d4 xxsep d4 n73 d2 n69 d2 xxsep d2 n73 d3 n69 d3 xxsep d3 n69 d1 xxsep d1 n64 d10 xxsep d10 n62 d2 xxsep d2 n62 d16 xxsep d16 n62 d8 xxsep d8 n78 d3 n69 d3 xxsep d3 n79 d3 n71 d3 xxsep d2 n78 d3 n69 d3 xxsep d3 n76 d11 n69 d11 xxsep d11 n74 d3 xxsep d2 n73 d3 xxsep d3 n69 d3 xxsep d3 n64 d3 xxsep d2 n62 d3 xxsep d3 n61 d3 xxsep d3 n59 d3 xxsep d2 n57 d3 xxsep d3 n67 d16 n60 d16 xxsep d19 n67 d3 n60 d3 xxsep d3 n66 d3 n60 d3 xxsep d2 n64 d3 n60 d3 xxsep d3 n62 d6 xxsep d6 n66 d1 xxsep d1 n64 d1 xxsep d1 n64 d6 n60 d6 xxsep d6 n62 d2 n59 d2 xxsep d2 n62 d8 n59 d8 xxsep d12 n62 d4 n59 d4 xxsep d4 n64 d1 n59 d1 xxsep d1 n62 d1 xxsep d1 n59 d1 xxsep d1",
         },
         "Videospielmusik": {
             "SoloMelodie": MukkeBudeLSTM.load(mapping=mapping, name="Videospielmusik_soloMelodie_lstm"),
