@@ -41,7 +41,7 @@ def midi_viewer_example(midiExample=None):
     return render_template(
         "index.html",
         midi=None,
-        placeholder="generated_song_p0_8_withSeed",
+        placeholder="generated_song_pinkfloyd_lstm_poly_example",
         midiExample=midiExample,
         settings=settings,
     )
