@@ -26,8 +26,8 @@ models = {
         "Videospielmusik": {
             "SoloMelodie": MukkeBudeLSTM.load(mapping=mapping, name="Videospielmusik_soloMelodie_lstm"),
             "Polyphon": MukkeBudeLSTM.load(mapping=mapping, name="Videospielmusik_polyphonie_lstm"),
-            "SeedSoloMelodie": "n72 _ _ _ _ _ n72 _ _ _ _ _ n72 _ n71 _",
-            "SeedPolyphon": "xxbos n67 d4 n62 d4 n58 d4 n43 d4 xxsep d4 n67 d4 n62 d4 n58 d4 n55 d4 xxsep d4 n69 d4 n62 d4 n57 d4 n54 d4 xxsep",
+            "SeedSoloMelodie": "n79 _ n67 n67 n67 _ n74 n79 n77 _ n65 n65 n65 _ n72 n77 n76 _ n60 n60 n60 _ n76 n76 n76 _ _ n72 n67 n76 n78 _ _ _ n74 n69 n81 n67 _ _ _ _ _ _ _ _ _ _",
+            "SeedPolyphon": "n46 d4 xxsep d4 n53 d2 n50 d2 xxsep d2 n62 d1 n58 d1 xxsep d2 n53 d2 n53 d2 n50 d2 xxsep d4 n46 d4 xxsep d4 n55 d2 n51 d2 xxsep d2 n63 d1 n58 d1 xxsep d2 n55 d2 n55 d2 n51 d2 xxsep d4 n46 d4 xxsep d4 n57 d2 n53 d2 xxsep d2 n65 d1 n60 d1 xxsep d2 n57 d2 n57 d2 n53 d2 xxsep d4 n46 d4 xxsep d4 n55 d2 n51 d2 xxsep d2 n63 d1 n58 d1 xxsep d2 n55 d2 n55 d2 n51 d2 xxsep d4",
         },
     },
     # Currently not working, only uncomment if Transformer network is working
