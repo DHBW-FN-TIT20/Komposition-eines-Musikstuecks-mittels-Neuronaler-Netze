@@ -8,7 +8,14 @@ from flask import render_template
 from flask import request
 from utils import *
 
-import mukkeBude
+from mukkeBude import utils as mukkeBude_utils
+from mukkeBude.mapping import BOS
+from mukkeBude.mapping import REST
+from mukkeBude.mapping import SEP
+from mukkeBude.mapping import SPECIAL_TOKS
+from mukkeBude.mapping import WAIT_LSTM
+from mukkeBude.model import MukkeBudeLSTM
+from mukkeBude.model import MukkeBudeTransformer
 
 # Disable tensorflow warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -59,20 +66,45 @@ def return_generated_name():
     generated_music = model.generate(start_seed=start_seed, max_length=int(length))
 
     if coding == "SoloMelodie":
-        new_song = mukkeBude.utils.decode_songs_old(generated_music)
-    else:
+        # Remove REST and WAIT_LSTM from SPECIAL_TOKS
+        # They should not be removed from the generated song
+        special_tokens = SPECIAL_TOKS.copy()
+        special_tokens.remove(REST)
+        special_tokens.remove(WAIT_LSTM)
+
+        generated_music = " ".join(
+            mukkeBude_utils.replace_special_tokens(generated_music.split(), WAIT_LSTM, special_tokens),
+        )
+
+        new_song = mukkeBude_utils.decode_songs_old(
+            song=generated_music,
+            bpm=int(bpm),
+            instrument=m21Instrument[instrument],
+        )
+
+    elif coding == "Polyphon":
+        # Remove REST and WAIT_LSTM from SPECIAL_TOKS
+        # They should not be removed from the generated song
+        special_tokens = SPECIAL_TOKS.copy()
+        special_tokens.remove(SEP)
+        special_tokens.remove(BOS)
+
+        generated_music = " ".join(
+            mukkeBude_utils.replace_special_tokens(generated_music.split(), "d1", special_tokens),
+        )
+
         new_song_ints = mapping.numericalize(generated_music.split(" "))
-        new_song = mukkeBude.utils.from_polyphonic_encoding(
+
+        new_song = mukkeBude_utils.from_polyphonic_encoding(
             index_arr=np.array(new_song_ints),
             mapping=mapping,
             bpm=int(bpm),
             instrument=m21Instrument[instrument],
         )
 
-    # TODO write util function to transpose song to specific key
-    # new_song = mukkeBude.utils.transpose_song_to_specific_key(new_song, key)
+    new_song = mukkeBude_utils.transpose_song_to(new_song, key)
 
-    mukkeBude.utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
-    mukkeBude.utils.write_musicxml(new_song, f"{mxlLocation}/{generatedName}.musicxml")
+    mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
+    mukkeBude_utils.write_musicxml(new_song, f"{mxlLocation}/{generatedName}.musicxml")
 
     return generatedName

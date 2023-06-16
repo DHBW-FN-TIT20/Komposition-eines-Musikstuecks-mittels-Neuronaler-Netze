@@ -157,6 +157,25 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
     return transposed_songs
 
 
+def transpose_song_to(song: m21.stream.Score, pitch: str) -> m21.stream.Score:
+    """Transpose the song to the given pitch
+
+    :param song: song
+    :param pitch: pitch to transpose to
+    :return: transposed song
+    """
+
+    key = song.analyze("key")
+
+    # Interval between tonic and the given pitch
+    interval = m21.interval.Interval(key.tonic, m21.pitch.Pitch(pitch))
+
+    # transpose song
+    transposed_song = song.transpose(interval)
+
+    return transposed_song
+
+
 def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]]:
     """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
@@ -199,6 +218,9 @@ def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]
                 # Rests
                 elif isinstance(event, m21.note.Rest):
                     symbol = "r"
+                # Unkown
+                else:
+                    continue
 
                 # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
                 # The note itself and 3 "_" symbols
@@ -215,7 +237,7 @@ def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]
     return encoded_songs
 
 
-def decode_songs_old(song: str, bpm: int = 120) -> m21.stream.Stream:
+def decode_songs_old(song: str, bpm: int = 120, instrument=m21.instrument.Piano()) -> m21.stream.Stream:
     """Decode the song with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
     :param song: the encoded song
@@ -229,6 +251,8 @@ def decode_songs_old(song: str, bpm: int = 120) -> m21.stream.Stream:
 
     m21_stream: m21.stream.Stream = m21.stream.Stream()
     m21_stream.append(m21.tempo.MetronomeMark(number=bpm))
+    m21_stream.append(instrument)
+
     start_symbol = None
     step_counter = 1  # Tracks the length of one note. 1 = 1/4 note, 2 = 1/2 note, 4 = 1 whole note
     step_duration = 0.25  # The duration of one step in quarter length

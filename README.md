@@ -1,10 +1,15 @@
 # Komposition-eines-Musikstuecks-mittels-Neuronaler-Netze
-Ziel der Studienarbeit ist die Komposition eines kleinen Musikstücks. Die Komposition erfolgt mittels eines Neuronalen Netzes.
+Ziel der Studienarbeit ist die Komposition eines kleinen Musikstücks mithilfe eines Neuronalen Netzes.
 
 ![](./flask-webapp/static/img/mukkebude-readme.png)
 
+Es stehen LSTM, GRU und Transformer-Netze zur Verfügung. Die Netze werden mit Hilfe von Keras und Tensorflow implementiert. Es sind bereits trainierte Modelle vorhanden, die in der Webapp oder auch in den Jupyter-Notebook's ([demos](./demos/)) verwendet werden können.
+
 # Usage
 Hier wird beschrieben wir man das Projekt verwendet.
+
+**Achtung!** </br>
+Die Verwendung der Transformer-Netze ist nicht nativ über die reine Installation des Projektes über PyPi verwendbar. Hierfür muss das Porjekt mittels `git clone` heruntergeladen werden.
 
 ## Installation
 Um die unter [demos](./demos/) bereitgestellten jupyter-notebook verwenden zu können, muss das Projekt mittels pip installiert werden.
