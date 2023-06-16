@@ -57,7 +57,7 @@ let generate_new_song = () => {
     const main = $('#main');
     const loadingScreen = $('#loading-screen');
     const generateButton = $('#generate-button');
-    $('#generate input[type=radio]').each(function() {
+    $('#generate input[type=radio]').each(function () {
         $(this).prop('disabled', true);
     });
 
@@ -95,3 +95,13 @@ let generate_new_song = () => {
         document.location.href = url;
     });
 }
+
+// Add special event listener for pink floyd. There is no mono melody option for pink floyd.
+$(`input[type='radio'][name='music']`).change(function (e) {
+    if (document.getElementById('pink-floyd').checked) {
+        document.getElementById('melody').parentNode.style.display = 'none';
+        document.getElementById('polyphon').checked = true;
+    } else {
+        document.getElementById('melody').parentNode.style.display = 'block';
+    }
+});
