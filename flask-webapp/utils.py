@@ -114,20 +114,20 @@ settings = [
         "radioButtons": [
             {
                 "id": "lgth1",
-                "value": "100",
-                "label": "max. 100 Zeichen",
+                "value": "200",
+                "label": "max. 200 Zeichen",
                 "checked": True,
             },
             {
                 "id": "lgth2",
-                "value": "200",
-                "label": "max. 200 Zeichen",
+                "value": "500",
+                "label": "max. 500 Zeichen",
                 "checked": False,
             },
             {
                 "id": "lgth3",
-                "value": "500",
-                "label": "max. 500 Zeichen",
+                "value": "1000",
+                "label": "max. 1000 Zeichen",
                 "checked": False,
             },
         ],
