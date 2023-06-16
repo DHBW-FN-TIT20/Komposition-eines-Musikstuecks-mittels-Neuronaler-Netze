@@ -29,7 +29,7 @@ def midi_viewer(midi=None):
     return render_template(
         "index.html",
         midi=midi,
-        placeholder="generated_song_p0_8_withSeed",
+        placeholder="generated_song_pinkfloyd_lstm_poly_example",
         midiExample=False,
         settings=settings,
     )
