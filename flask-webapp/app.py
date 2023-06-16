@@ -102,8 +102,7 @@ def return_generated_name():
             instrument=m21Instrument[instrument],
         )
 
-    # TODO write util function to transpose song to specific key
-    # new_song = mukkeBude_utils.transpose_song_to_specific_key(new_song, key)
+    new_song = mukkeBude_utils.transpose_song_to(new_song, key)
 
     mukkeBude_utils.write_midi(new_song, f"{midiLocation}/{generatedName}.mid")
     mukkeBude_utils.write_musicxml(new_song, f"{mxlLocation}/{generatedName}.musicxml")

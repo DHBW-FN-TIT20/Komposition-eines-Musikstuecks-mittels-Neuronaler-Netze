@@ -157,6 +157,25 @@ def transpose_songs(songs: List[m21.stream.Score]) -> List[m21.stream.Score]:
     return transposed_songs
 
 
+def transpose_song_to(song: m21.stream.Score, pitch: str) -> m21.stream.Score:
+    """Transpose the song to the given pitch
+
+    :param song: song
+    :param pitch: pitch to transpose to
+    :return: transposed song
+    """
+
+    key = song.analyze("key")
+
+    # Interval between tonic and the given pitch
+    interval = m21.interval.Interval(key.tonic, m21.pitch.Pitch(pitch))
+
+    # transpose song
+    transposed_song = song.transpose(interval)
+
+    return transposed_song
+
+
 def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]]:
     """Encode the songs with the old LSTM format. Each midi integer value is encoded to an string. The duration is encoded as an "_".
 
