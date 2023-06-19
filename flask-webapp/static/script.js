@@ -88,9 +88,10 @@ let generate_new_song = () => {
     }).done(() => {
         console.log(`Data from /generate: ${data}`);
         url += data;
-    }).fail(() => {
+    }).fail((jqXHR, textStatus, errorThrown) => {
         url += '';
-        alert('Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webseiten-Administrator.');
+        // alert('Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webseiten-Administrator.');
+        alert(`TextStatus: ${textStatus}. ErrorThrown: ${errorThrown}`);
     }).always(() => {
         document.location.href = url;
     });
