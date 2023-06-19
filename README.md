@@ -38,6 +38,24 @@ pip install jupyterlab
 ## Verwendung
 Nach einer erfolgreichen installtion kann das modul mittels `import mukkeBude` verwendet werden. Entsprechende Beispiele sind unter [demos](./demos/) zu finden.
 
+# Webapp
+Im Ordner [flask-webapp](./flask-webapp/) befindet sich eine Webapp, die die Verwendung der Netze ermöglicht. Für das Starten der Webapp sollte mukkeBude entsprechend installiert werden. Zusätzliche Abhängigkeiten können mittels `pip install -r requirements-dev.txt` im Ordner [flask-webapp](./flask-webapp/) installiert werden.
+
+Starten der Webapp:
+```bash
+cd flask-webapp
+flask run
+```
+
+Starten mit Docker:
+```bash
+# Bauen des Docker-Images
+docker buildx build -t mukkebude .
+
+# Starten des Docker-Containers
+docker run -p 8080:8080 -d --name mukkebude mukkebude
+```
+
 # Developing
 
 Hier wird beschrieben, wie man seine Entwicklungsumgebung entsprechend vorbereitet, um an dem Projekt zu entwicklen.
