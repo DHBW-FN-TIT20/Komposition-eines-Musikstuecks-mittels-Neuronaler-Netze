@@ -168,6 +168,9 @@ def encode_songs_old(songs: List[m21.stream.Score], flat=True) -> List[List[str]
                 # Rests
                 elif isinstance(event, m21.note.Rest):
                     symbol = "r"
+                # Unknown
+                else:
+                    continue
 
                 # For example, if the duration of the event is 1.0 (a quarter note), we need to add 4 time steps
                 # The note itself and 3 "_" symbols
