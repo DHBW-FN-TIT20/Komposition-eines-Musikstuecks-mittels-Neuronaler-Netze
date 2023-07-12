@@ -25,11 +25,6 @@ cd mukkeBude
 pip install .
 ```
 
-**PyPi**
-```bash
-pip install mukkeBude
-```
-
 Für die Verwendung der **Jupyter-Notebooks** muss jupyter-lab zusätzlich installiert werden!
 ```bash
 pip install jupyterlab
